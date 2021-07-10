@@ -3,9 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const config = require('./src/config');
+const config = require('./config');
 
-const api = require('./src/api/index');
+const api = require('./api/index');
 
 const app = express();
 const PORT = config.port || 3000;
