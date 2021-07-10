@@ -1,11 +1,9 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const config = require('./config');
-
-const api = require('./api/index');
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import logger from 'morgan';
+import config from './config';
+// import indexRouter from './api';
 
 const app = express();
 const PORT = config.port || 3000;
@@ -13,10 +11,9 @@ const PORT = config.port || 3000;
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', api);
+// app.use('/api', indexRouter);
 
 app.use((req, res, next) => {
     next(createError(404));
