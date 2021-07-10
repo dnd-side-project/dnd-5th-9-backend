@@ -3,10 +3,12 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const config = require('./src/config');
 
 const api = require('./src/api/index');
 
 const app = express();
+const PORT = config.port || 3000;
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -28,4 +30,6 @@ app.use((err, req, res, next) => {
     res.render('error');
 });
 
-module.exports = app;
+app.listen(PORT, () => {
+    console.log(`Server listen localhost:${PORT}`);
+});
