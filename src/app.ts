@@ -3,10 +3,20 @@ import express from 'express';
 import path from 'path';
 import logger from 'morgan';
 import config from './config';
+import { createConnection } from 'typeorm';
+import connectionOptions from './ormconfig';
 // import indexRouter from './api';
 
 const app = express();
 const PORT = config.port || 3000;
+
+createConnection(connectionOptions)
+    .then(() => {
+        console.log('DB Connetion Success');
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 
 app.use(logger('dev'));
 app.use(express.json());
