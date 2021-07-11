@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
         "sourceMap": true,
         "esModuleInterop": true,
         "target": "es2017",
@@ -16,5 +17,5 @@
         "@/*": ["src/*"],
         },
     },
-    "include": ["src/**/*", "ormconfig.js"]
+    "include": ["src/**/*"]
 }

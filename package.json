@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "tsc && node dist/src/app.js",
-    "dev": "tsc && pm2-dev dist/src/app.js"
+    "start": "ts-node ./src/app.ts",
+    "dev": "pm2-dev --interpreter ./node_modules/.bin/ts-node ./src/app.ts"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
