@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
+import Joi from 'joi';
+import { test } from '@/api/service/users.svc';
+import resResult from '@/lib/resResult';
 
 const router = express.Router();
-const Joi = require('joi');
-const users = require('../service/users.svc');
-const resResult = require('../../lib/resResult');
 
 router.post('/test', async (req, res) => {
     const schema = Joi.object({
@@ -16,10 +16,10 @@ router.post('/test', async (req, res) => {
     if (error)
         return res
             .status(400)
-            .send(resResult(400, false, '필수 값 확인', error.message));
+            .send(resResult(false, 400, '필수 값 확인', error.message));
 
     try {
-        const result = await users.test(value);
+        const result = await test(value);
 
         return res.status(result.code).send(result);
     } catch (err) {
@@ -28,4 +28,4 @@ router.post('/test', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;
