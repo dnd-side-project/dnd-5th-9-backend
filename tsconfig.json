@@ -11,11 +11,12 @@
         "noImplicitAny": false,
         "module": "commonjs",
         "skipLibCheck": true,
-        "baseUrl": ".",
-        "outDir": "dist",
+        "baseUrl": "./",
+        "rootDir": "./",
+        "outDir": "./dist",
         "paths": {
         "@/*": ["src/*"],
         },
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*.ts"]
 }
