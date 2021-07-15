@@ -1,13 +1,13 @@
-import resResult from '@/lib/resResult';
+import User from '../../entity/User.entity';
+import { getRepository } from 'typeorm';
 
-const test = async ({ userId, password }) => {
+export const createUser = async (userDTO: User): Promise<boolean> => {
     try {
-        console.log(userId, password);
-        return resResult(true, 200, '통신완료', userId);
+        const userRepository = getRepository(User);
+        await userRepository.save(userDTO);
+        return true;
     } catch (err) {
-        console.log(err);
-        return resResult(false, 500, '데이터베이스 오류', err);
+        console.error(err);
+        return false;
     }
 };
-
-export { test };
