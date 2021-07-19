@@ -9,7 +9,7 @@ const connectionOptions: ConnectionOptions = {
     password: config.db.password,
     database: config.db.database,
     synchronize: true,
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    entities: [__dirname + '/entity/*.{ts,js}'],
 };
 
 export default connectionOptions;
