@@ -1,8 +1,15 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import MettingMember from './Metting_member';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    OneToMany,
+} from 'typeorm';
 
-@Entity()
+@Entity({ name: 'user' })
 export default class User {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     id!: number;
 
     @Column({ length: 63 })
@@ -17,10 +24,6 @@ export default class User {
     @Column({ length: 1023 })
     token!: string;
 
-    @Column({
-        name: 'created_at',
-        type: 'datetime',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
+    @CreateDateColumn({ name: 'created_at' })
     createdAt!: Date;
 }

@@ -1,8 +1,14 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import Metting from './Metting';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+} from 'typeorm';
 
-@Entity()
-export default class metting_schdule {
-    @PrimaryColumn()
+@Entity({ name: 'metting_schdule' })
+export default class MettingSchdule {
+    @PrimaryGeneratedColumn()
     id!: number;
 
     @Column({ name: 'metting_id' })
@@ -14,10 +20,6 @@ export default class metting_schdule {
     @Column({ name: 'end_date' })
     endDate!: Date;
 
-    @Column({
-        name: 'created_at',
-        type: 'datetime',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
+    @CreateDateColumn({ name: 'created_at' })
     createdAt!: Date;
 }

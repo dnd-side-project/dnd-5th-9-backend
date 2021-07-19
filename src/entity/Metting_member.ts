@@ -1,8 +1,15 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import User from './User';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    ManyToOne,
+} from 'typeorm';
 
-@Entity()
-export default class metting_member {
-    @PrimaryColumn()
+@Entity({ name: 'metting_member' })
+export default class MettingMember {
+    @PrimaryGeneratedColumn()
     id!: number;
 
     @Column({ name: 'metting_id' })
@@ -26,10 +33,6 @@ export default class metting_member {
     @Column({ type: 'float' })
     lng?: number;
 
-    @Column({
-        name: 'created_at',
-        type: 'datetime',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
+    @CreateDateColumn({ name: 'created_at' })
     createdAt!: Date;
 }
