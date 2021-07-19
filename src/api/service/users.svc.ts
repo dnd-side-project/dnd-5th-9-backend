@@ -1,4 +1,4 @@
-import User from '../../entity/User';
+import User from '../../entity/User.entity';
 import { getRepository } from 'typeorm';
 
 export const createUser = async (userDTO: User): Promise<boolean> => {
