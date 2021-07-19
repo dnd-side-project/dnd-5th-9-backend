@@ -1,4 +1,4 @@
-import Metting from './Metting';
+import Meeting from './Meeting';
 import {
     Entity,
     Column,
@@ -6,13 +6,13 @@ import {
     CreateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'metting_schdule' })
-export default class MettingSchdule {
+@Entity({ name: 'meeting_schdule' })
+export default class MeetingSchdule {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ name: 'metting_id' })
-    mettingId!: number;
+    @Column({ name: 'meeting_id' })
+    meetingId!: number;
 
     @Column({ name: 'start_date' })
     startDate!: Date;
