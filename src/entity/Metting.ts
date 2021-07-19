@@ -1,8 +1,14 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import MettingSchdule from './Metting_schdule';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+} from 'typeorm';
 
-@Entity()
-export default class metting {
-    @PrimaryColumn()
+@Entity({ name: 'metting' })
+export default class Metting {
+    @PrimaryGeneratedColumn()
     id!: number;
 
     @Column()
@@ -17,10 +23,6 @@ export default class metting {
     @Column({ name: 'place_yn', type: 'boolean', default: true })
     placeYn!: boolean;
 
-    @Column({
-        name: 'created_at',
-        type: 'datetime',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
+    @CreateDateColumn({ name: 'created_at' })
     createdAt!: Date;
 }
