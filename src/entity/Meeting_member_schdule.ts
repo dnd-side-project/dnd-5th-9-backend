@@ -5,13 +5,13 @@ import {
     CreateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'metting_member_schdule' })
-export default class MettingMemberSchdule {
+@Entity({ name: 'meeting_member_schdule' })
+export default class MeetingMemberSchdule {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ name: 'metting_member_id' })
-    mettingMemberId!: number;
+    @Column({ name: 'meeting_member_id' })
+    meetingMemberId!: number;
 
     @Column({ name: 'start_date' })
     startDate!: Date;

@@ -7,13 +7,13 @@ import {
     ManyToOne,
 } from 'typeorm';
 
-@Entity({ name: 'metting_member' })
-export default class MettingMember {
+@Entity({ name: 'meeting_member' })
+export default class MeetingMember {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ name: 'metting_id' })
-    mettingId!: number;
+    @Column({ name: 'meeting_id' })
+    meetingId!: number;
 
     @Column({ name: 'user_id' })
     userId!: number;

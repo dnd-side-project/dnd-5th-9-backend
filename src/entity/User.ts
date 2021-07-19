@@ -1,4 +1,4 @@
-import MettingMember from './Metting_member';
+import MeetingMember from './Meeting_member';
 import {
     Entity,
     Column,
