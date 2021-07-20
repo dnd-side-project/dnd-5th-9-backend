@@ -1,11 +1,5 @@
 import MeetingMember from './Meeting_member';
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity({ name: 'user' })
 export default class User {
@@ -24,6 +18,6 @@ export default class User {
     @Column({ length: 1023 })
     token!: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt!: Date;
+    @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.user)
+    meetingMembers: MeetingMember[] | undefined;
 }

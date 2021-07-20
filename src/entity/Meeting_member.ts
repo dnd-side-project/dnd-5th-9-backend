@@ -3,20 +3,17 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    CreateDateColumn,
     ManyToOne,
+    OneToMany,
+    JoinColumn,
 } from 'typeorm';
+import MeetingMemberSchedule from './Meeting_member_schedule';
+import Meeting from './Meeting';
 
 @Entity({ name: 'meeting_member' })
 export default class MeetingMember {
     @PrimaryGeneratedColumn()
     id!: number;
-
-    @Column({ name: 'meeting_id' })
-    meetingId!: number;
-
-    @Column({ name: 'user_id' })
-    userId!: number;
 
     @Column()
     name!: string;
@@ -33,6 +30,17 @@ export default class MeetingMember {
     @Column({ type: 'float' })
     lng?: number;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt!: Date;
+    @OneToMany(
+        () => MeetingMemberSchedule,
+        (meetingMemberSchedule) => meetingMemberSchedule.meetingMember
+    )
+    meetingMemberSchedules: MeetingMemberSchedule[] | undefined;
+
+    @ManyToOne(() => Meeting, (meeting) => meeting.meetingMembers)
+    @JoinColumn({ name: 'meeting_id' })
+    meeting!: Meeting;
+
+    @ManyToOne(() => User, (user) => user.meetingMembers)
+    @JoinColumn({ name: 'user_id' })
+    user!: User;
 }

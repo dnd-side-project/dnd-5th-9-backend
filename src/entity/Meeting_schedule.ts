@@ -3,16 +3,14 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    CreateDateColumn,
+    OneToOne,
+    JoinColumn,
 } from 'typeorm';
 
-@Entity({ name: 'meeting_schdule' })
-export default class MeetingSchdule {
+@Entity({ name: 'meeting_schedule' })
+export default class MeetingSchedule {
     @PrimaryGeneratedColumn()
     id!: number;
-
-    @Column({ name: 'meeting_id' })
-    meetingId!: number;
 
     @Column({ name: 'start_date' })
     startDate!: Date;
@@ -20,6 +18,7 @@ export default class MeetingSchdule {
     @Column({ name: 'end_date' })
     endDate!: Date;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt!: Date;
+    @OneToOne(() => Meeting, (meeting) => meeting.meetingSchedule)
+    @JoinColumn({ name: 'meeting_id' })
+    meeting!: Meeting;
 }
