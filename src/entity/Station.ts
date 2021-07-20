@@ -1,8 +1,13 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+} from 'typeorm';
 
-@Entity()
+@Entity({ name: 'station' })
 export default class Station {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
     id!: number;
 
     @Column({ length: 63 })
@@ -17,10 +22,6 @@ export default class Station {
     @Column({ type: 'float' })
     lng!: number;
 
-    @Column({
-        name: 'created_at',
-        type: 'datetime',
-        default: () => 'CURRENT_TIMESTAMP',
-    })
+    @CreateDateColumn({ name: 'created_at' })
     createdAt!: Date;
 }
