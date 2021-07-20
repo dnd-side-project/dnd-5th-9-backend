@@ -1,10 +1,12 @@
-import MeetingSchdule from './Meeting_schdule';
 import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    CreateDateColumn,
+    OneToMany,
+    OneToOne,
 } from 'typeorm';
+import MeetingMember from './Meeting_member';
+import MeetingSchedule from './Meeting_schedule';
 
 @Entity({ name: 'meeting' })
 export default class Meeting {
@@ -23,6 +25,12 @@ export default class Meeting {
     @Column({ name: 'place_yn', type: 'boolean', default: true })
     placeYn!: boolean;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt!: Date;
+    @OneToOne(
+        () => MeetingSchedule,
+        (meetingSchedule) => meetingSchedule.meeting
+    )
+    meetingSchedule: MeetingSchedule | undefined;
+
+    @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meeting)
+    meetingMembers: MeetingMember[] | undefined;
 }

@@ -10,6 +10,7 @@ const connectionOptions: ConnectionOptions = {
     database: config.db.database,
     synchronize: true,
     entities: [__dirname + '/entity/*.{ts,js}'],
+    extra: { charset: 'utf8mb4_unicode_ci' },
 };
 
 export default connectionOptions;
