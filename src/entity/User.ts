@@ -1,5 +1,13 @@
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToMany,
+    ManyToMany,
+    JoinTable,
+} from 'typeorm';
 import MeetingMember from './Meeting_member';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import Meeting from './Meeting';
 
 @Entity({ name: 'user' })
 export default class User {
@@ -20,4 +28,18 @@ export default class User {
 
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.user)
     meetingMembers: MeetingMember[] | undefined;
+
+    @ManyToMany(() => Meeting, (meeting) => meeting.users)
+    @JoinTable({
+        name: 'user_to_meeting',
+        joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'meeting_id',
+            referencedColumnName: 'id',
+        },
+    })
+    meetings: Meeting[] | undefined;
 }

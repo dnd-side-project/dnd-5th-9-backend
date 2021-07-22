@@ -4,9 +4,11 @@ import {
     PrimaryGeneratedColumn,
     OneToMany,
     OneToOne,
+    ManyToMany,
 } from 'typeorm';
 import MeetingMember from './Meeting_member';
 import MeetingSchedule from './Meeting_schedule';
+import User from './User';
 
 @Entity({ name: 'meeting' })
 export default class Meeting {
@@ -33,4 +35,7 @@ export default class Meeting {
 
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meeting)
     meetingMembers: MeetingMember[] | undefined;
+
+    @ManyToMany(() => User, (user) => user.meetings)
+    users: User[] | undefined;
 }
