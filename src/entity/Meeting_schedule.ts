@@ -1,4 +1,3 @@
-import Meeting from './Meeting';
 import {
     Entity,
     Column,
@@ -6,6 +5,7 @@ import {
     OneToOne,
     JoinColumn,
 } from 'typeorm';
+import Meeting from './Meeting';
 
 @Entity({ name: 'meeting_schedule' })
 export default class MeetingSchedule {

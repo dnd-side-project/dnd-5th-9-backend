@@ -1,4 +1,3 @@
-import User from './User';
 import {
     Entity,
     Column,
@@ -7,6 +6,7 @@ import {
     OneToMany,
     JoinColumn,
 } from 'typeorm';
+import User from './User';
 import MeetingMemberSchedule from './Meeting_member_schedule';
 import Meeting from './Meeting';
 
