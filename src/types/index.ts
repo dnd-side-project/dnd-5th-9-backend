@@ -43,7 +43,7 @@ export interface MeetingMember {
     lng?: number;
 }
 
-export interface MeetingMemberScehdule {
+export interface MeetingMemberSchedule {
     id?: number;
     meetingMemberId?: number;
     startDate?: Date;
