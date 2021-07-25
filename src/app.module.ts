@@ -7,8 +7,12 @@ import { UserModule } from './user/user.module';
 import * as ormconfig from './ormconfig';
 
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot(ormconfig), UserModule,],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot(),
+        TypeOrmModule.forRoot(ormconfig),
+        UserModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
