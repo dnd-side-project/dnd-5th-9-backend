@@ -9,9 +9,9 @@
 
 ## 🔨 **Tech Stack**
 
-<img style="width: 100px; margin-left: 1rem;"  src="https://raw.githubusercontent.com/devicons/devicon/9f4f5cdb393299a81125eb5127929ea7bfe42889/icons/nestjs/nestjs-plain-wordmark.svg">
-<img style="width: 100px; margin-left: 1rem;"  src="https://raw.githubusercontent.com/devicons/devicon/9f4f5cdb393299a81125eb5127929ea7bfe42889/icons/amazonwebservices/amazonwebservices-original-wordmark.svg">
-<img style="width: 100px; margin-left: 1rem;"  src="https://raw.githubusercontent.com/devicons/devicon/9f4f5cdb393299a81125eb5127929ea7bfe42889/icons/mysql/mysql-original-wordmark.svg">
+<img width="100px" src="https://raw.githubusercontent.com/devicons/devicon/9f4f5cdb393299a81125eb5127929ea7bfe42889/icons/nestjs/nestjs-plain-wordmark.svg">
+<img width="100px" src="https://raw.githubusercontent.com/devicons/devicon/9f4f5cdb393299a81125eb5127929ea7bfe42889/icons/amazonwebservices/amazonwebservices-original-wordmark.svg">
+<img width="100px" src="https://raw.githubusercontent.com/devicons/devicon/9f4f5cdb393299a81125eb5127929ea7bfe42889/icons/mysql/mysql-original-wordmark.svg">
 
 ## 👩‍💻 **BackEnd**
 
