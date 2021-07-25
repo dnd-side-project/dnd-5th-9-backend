@@ -1,11 +1,11 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import Meeting from "./entities/Meeting";
-import MeetingMember from "./entities/Meeting_member";
-import MeetingMemberSchedule from "./entities/Meeting_member_schedule";
-import MeetingSchedule from "./entities/Meeting_schedule";
-import Station from "./entities/Station";
-import User from "./entities/User";
+import Meeting from './entities/Meeting';
+import MeetingMember from './entities/Meeting_member';
+import MeetingMemberSchedule from './entities/Meeting_member_schedule';
+import MeetingSchedule from './entities/Meeting_schedule';
+import Station from './entities/Station';
+import User from './entities/User';
 dotenv.config();
 
 const config: TypeOrmModuleOptions = {
@@ -15,7 +15,14 @@ const config: TypeOrmModuleOptions = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
-    entities: [Meeting, MeetingMember, MeetingMemberSchedule, MeetingSchedule, Station, User],
+    entities: [
+        Meeting,
+        MeetingMember,
+        MeetingMemberSchedule,
+        MeetingSchedule,
+        Station,
+        User,
+    ],
     migrations: [__dirname + '/src/migration/*.ts'],
     cli: { migrationsDir: 'src/migrations' },
     autoLoadEntities: true,
