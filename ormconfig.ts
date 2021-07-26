@@ -1,11 +1,11 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import Meeting from './entities/Meeting';
-import MeetingMember from './entities/Meeting_member';
-import MeetingMemberSchedule from './entities/Meeting_member_schedule';
-import MeetingSchedule from './entities/Meeting_schedule';
-import Station from './entities/Station';
-import User from './entities/User';
+import Meeting from './src/entities/Meeting';
+import MeetingMember from './src/entities/Meeting_member';
+import MeetingMemberSchedule from './src/entities/Meeting_member_schedule';
+import MeetingSchedule from './src/entities/Meeting_schedule';
+import Station from './src/entities/Station';
+import User from './src/entities/User';
 dotenv.config();
 
 const config: TypeOrmModuleOptions = {
