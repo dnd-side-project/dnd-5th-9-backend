@@ -5,15 +5,15 @@ export default class Station {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ length: 63 })
+    @Column({ length: 63, update: false })
     name!: string;
 
-    @Column({ length: 15 })
+    @Column({ length: 15, update: false })
     line!: string;
 
-    @Column({ type: 'float' })
+    @Column({ type: 'float', update: false })
     lat!: number;
 
-    @Column({ type: 'float' })
+    @Column({ type: 'float', update: false })
     lng!: number;
 }
