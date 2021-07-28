@@ -5,6 +5,8 @@ import {
     ManyToOne,
     OneToMany,
     JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import User from './User';
 import MeetingMemberSchedule from './MeetingMemberSchedule';
@@ -29,6 +31,16 @@ export default class MeetingMember {
 
     @Column({ type: 'float' })
     lng?: number;
+
+    @CreateDateColumn({
+        name: 'created_at',
+    })
+    public createdAt: Date;
+
+    @UpdateDateColumn({
+        name: 'updated_at',
+    })
+    public updatedAt: Date;
 
     @OneToMany(
         () => MeetingMemberSchedule,

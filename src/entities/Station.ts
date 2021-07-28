@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'station' })
 export default class Station {
@@ -16,4 +22,14 @@ export default class Station {
 
     @Column({ type: 'float', update: false })
     lng!: number;
+
+    @CreateDateColumn({
+        name: 'created_at',
+    })
+    public createdAt: Date;
+
+    @UpdateDateColumn({
+        name: 'updated_at',
+    })
+    public updatedAt: Date;
 }

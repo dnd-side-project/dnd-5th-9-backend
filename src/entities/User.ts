@@ -5,6 +5,8 @@ import {
     OneToMany,
     ManyToMany,
     JoinTable,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import MeetingMember from './MeetingMember';
 import Meeting from './Meeting';
@@ -25,6 +27,16 @@ export default class User {
 
     @Column({ length: 1023 })
     token!: string;
+
+    @CreateDateColumn({
+        name: 'created_at',
+    })
+    public createdAt: Date;
+
+    @UpdateDateColumn({
+        name: 'updated_at',
+    })
+    public updatedAt: Date;
 
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.user)
     meetingMembers: MeetingMember[] | undefined;

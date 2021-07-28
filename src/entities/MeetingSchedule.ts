@@ -4,6 +4,8 @@ import {
     PrimaryGeneratedColumn,
     OneToOne,
     JoinColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import Meeting from './Meeting';
 
@@ -17,6 +19,16 @@ export default class MeetingSchedule {
 
     @Column({ name: 'end_date' })
     endDate!: Date;
+
+    @CreateDateColumn({
+        name: 'created_at',
+    })
+    public createdAt: Date;
+
+    @UpdateDateColumn({
+        name: 'updated_at',
+    })
+    public updatedAt: Date;
 
     @OneToOne(() => Meeting, (meeting) => meeting.meetingSchedule)
     @JoinColumn({ name: 'meeting_id' })

@@ -5,6 +5,8 @@ import {
     OneToMany,
     OneToOne,
     ManyToMany,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 import MeetingMember from './MeetingMember';
 import MeetingSchedule from './MeetingSchedule';
@@ -26,6 +28,16 @@ export default class Meeting {
 
     @Column({ name: 'place_yn', type: 'boolean', default: true })
     placeYn!: boolean;
+
+    @CreateDateColumn({
+        name: 'created_at',
+    })
+    public createdAt: Date;
+
+    @UpdateDateColumn({
+        name: 'updated_at',
+    })
+    public updatedAt: Date;
 
     @OneToOne(
         () => MeetingSchedule,
