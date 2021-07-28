@@ -7,7 +7,7 @@ import {
     JoinColumn,
 } from 'typeorm';
 import User from './User';
-import MeetingMemberSchedule from './Meeting_member_schedule';
+import MeetingMemberSchedule from './MeetingMemberSchedule';
 import Meeting from './Meeting';
 
 @Entity({ name: 'meeting_member' })

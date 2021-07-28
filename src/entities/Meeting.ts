@@ -6,8 +6,8 @@ import {
     OneToOne,
     ManyToMany,
 } from 'typeorm';
-import MeetingMember from './Meeting_member';
-import MeetingSchedule from './Meeting_schedule';
+import MeetingMember from './MeetingMember';
+import MeetingSchedule from './MeetingSchedule';
 import User from './User';
 
 @Entity({ name: 'meeting' })

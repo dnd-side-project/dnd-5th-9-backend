@@ -6,7 +6,7 @@ import {
     ManyToMany,
     JoinTable,
 } from 'typeorm';
-import MeetingMember from './Meeting_member';
+import MeetingMember from './MeetingMember';
 import Meeting from './Meeting';
 
 @Entity({ name: 'user' })

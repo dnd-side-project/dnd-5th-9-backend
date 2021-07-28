@@ -5,7 +5,7 @@ import {
     ManyToOne,
     JoinColumn,
 } from 'typeorm';
-import MeetingMember from './Meeting_member';
+import MeetingMember from './MeetingMember';
 
 @Entity({ name: 'meeting_member_schedule' })
 export default class MeetingMemberSchedule {
