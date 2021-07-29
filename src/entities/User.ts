@@ -1,19 +1,10 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    ManyToMany,
-    JoinTable,
-} from 'typeorm';
-import MeetingMember from './Meeting_member';
-import Meeting from './Meeting';
+import { Entity, Column, OneToMany } from 'typeorm';
+import BaseEntity from './BaseEntity';
+import MeetingMember from './MeetingMember';
+import UserToMeeting from './UserToMeeting';
 
 @Entity({ name: 'user' })
-export default class User {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class User extends BaseEntity {
     @Column({ length: 63 })
     email!: string;
 
@@ -29,17 +20,6 @@ export default class User {
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.user)
     meetingMembers: MeetingMember[] | undefined;
 
-    @ManyToMany(() => Meeting, (meeting) => meeting.users)
-    @JoinTable({
-        name: 'user_to_meeting',
-        joinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'id',
-        },
-        inverseJoinColumn: {
-            name: 'meeting_id',
-            referencedColumnName: 'id',
-        },
-    })
-    meetings: Meeting[] | undefined;
+    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.user)
+    userToMeetings: UserToMeeting[] | undefined;
 }

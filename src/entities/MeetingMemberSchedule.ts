@@ -1,17 +1,9 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-} from 'typeorm';
-import MeetingMember from './Meeting_member';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import BaseEntity from './BaseEntity';
+import MeetingMember from './MeetingMember';
 
 @Entity({ name: 'meeting_member_schedule' })
-export default class MeetingMemberSchedule {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class MeetingMemberSchedule extends BaseEntity {
     @Column({ name: 'start_date' })
     startDate!: Date;
 

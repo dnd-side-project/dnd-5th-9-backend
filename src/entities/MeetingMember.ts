@@ -1,22 +1,21 @@
 import {
     Entity,
     Column,
-    PrimaryGeneratedColumn,
     ManyToOne,
     OneToMany,
     JoinColumn,
+    OneToOne,
 } from 'typeorm';
+import BaseEntity from './BaseEntity';
 import User from './User';
-import MeetingMemberSchedule from './Meeting_member_schedule';
+import MeetingMemberSchedule from './MeetingMemberSchedule';
 import Meeting from './Meeting';
+import MeetingPlace from './MeetingPlace';
 
 @Entity({ name: 'meeting_member' })
-export default class MeetingMember {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class MeetingMember extends BaseEntity {
     @Column()
-    name!: string;
+    nickname!: string;
 
     @Column({ length: 511, nullable: true })
     password?: string;
@@ -24,11 +23,8 @@ export default class MeetingMember {
     @Column()
     auth!: boolean;
 
-    @Column({ type: 'float' })
-    lat?: number;
-
-    @Column({ type: 'float' })
-    lng?: number;
+    @OneToOne(() => MeetingPlace, (meetingPlace) => meetingPlace.meetingMember)
+    meetingPlace: MeetingPlace | undefined;
 
     @OneToMany(
         () => MeetingMemberSchedule,

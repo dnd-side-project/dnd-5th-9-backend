@@ -1,20 +1,11 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    OneToOne,
-    ManyToMany,
-} from 'typeorm';
-import MeetingMember from './Meeting_member';
-import MeetingSchedule from './Meeting_schedule';
-import User from './User';
+import { Entity, Column, OneToMany, OneToOne } from 'typeorm';
+import BaseEntity from './BaseEntity';
+import MeetingMember from './MeetingMember';
+import MeetingSchedule from './MeetingSchedule';
+import UserToMeeting from './UserToMeeting';
 
 @Entity({ name: 'meeting' })
-export default class Meeting {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class Meeting extends BaseEntity {
     @Column()
     title!: string;
 
@@ -36,6 +27,6 @@ export default class Meeting {
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meeting)
     meetingMembers: MeetingMember[] | undefined;
 
-    @ManyToMany(() => User, (user) => user.meetings)
-    users: User[] | undefined;
+    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.meeting)
+    userToMeetings: UserToMeeting[] | undefined;
 }
