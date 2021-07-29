@@ -23,12 +23,12 @@ export default class MeetingSchedule {
     @CreateDateColumn({
         name: 'created_at',
     })
-    public createdAt: Date;
+    createdAt: Date;
 
     @UpdateDateColumn({
         name: 'updated_at',
     })
-    public updatedAt: Date;
+    updatedAt: Date;
 
     @OneToOne(() => Meeting, (meeting) => meeting.meetingSchedule)
     @JoinColumn({ name: 'meeting_id' })
