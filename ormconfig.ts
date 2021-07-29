@@ -6,6 +6,7 @@ import MeetingMemberSchedule from './src/entities/MeetingMemberSchedule';
 import MeetingSchedule from './src/entities/MeetingSchedule';
 import Station from './src/entities/Station';
 import User from './src/entities/User';
+import UserToMeeting from './src/entities/UserToMeeting';
 dotenv.config();
 
 const config: TypeOrmModuleOptions = {
@@ -22,6 +23,7 @@ const config: TypeOrmModuleOptions = {
         MeetingSchedule,
         Station,
         User,
+        UserToMeeting,
     ],
     migrations: [__dirname + '/src/migration/*.ts'],
     cli: { migrationsDir: 'src/migrations' },

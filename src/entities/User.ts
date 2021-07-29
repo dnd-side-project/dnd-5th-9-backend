@@ -3,13 +3,11 @@ import {
     Column,
     PrimaryGeneratedColumn,
     OneToMany,
-    ManyToMany,
-    JoinTable,
     CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import MeetingMember from './MeetingMember';
-import Meeting from './Meeting';
+import UserToMeeting from './UserToMeeting';
 
 @Entity({ name: 'user' })
 export default class User {
@@ -31,27 +29,16 @@ export default class User {
     @CreateDateColumn({
         name: 'created_at',
     })
-    public createdAt: Date;
+    createdAt: Date;
 
     @UpdateDateColumn({
         name: 'updated_at',
     })
-    public updatedAt: Date;
+    updatedAt: Date;
 
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.user)
     meetingMembers: MeetingMember[] | undefined;
 
-    @ManyToMany(() => Meeting, (meeting) => meeting.users)
-    @JoinTable({
-        name: 'user_to_meeting',
-        joinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'id',
-        },
-        inverseJoinColumn: {
-            name: 'meeting_id',
-            referencedColumnName: 'id',
-        },
-    })
-    meetings: Meeting[] | undefined;
+    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.user)
+    userToMeetings: UserToMeeting[] | undefined;
 }

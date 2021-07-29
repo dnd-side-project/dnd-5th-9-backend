@@ -4,13 +4,12 @@ import {
     PrimaryGeneratedColumn,
     OneToMany,
     OneToOne,
-    ManyToMany,
     CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
 import MeetingMember from './MeetingMember';
 import MeetingSchedule from './MeetingSchedule';
-import User from './User';
+import UserToMeeting from './UserToMeeting';
 
 @Entity({ name: 'meeting' })
 export default class Meeting {
@@ -32,12 +31,12 @@ export default class Meeting {
     @CreateDateColumn({
         name: 'created_at',
     })
-    public createdAt: Date;
+    createdAt: Date;
 
     @UpdateDateColumn({
         name: 'updated_at',
     })
-    public updatedAt: Date;
+    updatedAt: Date;
 
     @OneToOne(
         () => MeetingSchedule,
@@ -48,6 +47,6 @@ export default class Meeting {
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meeting)
     meetingMembers: MeetingMember[] | undefined;
 
-    @ManyToMany(() => User, (user) => user.meetings)
-    users: User[] | undefined;
+    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.meeting)
+    userToMeetings: UserToMeeting[] | undefined;
 }
