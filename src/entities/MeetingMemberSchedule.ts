@@ -1,34 +1,14 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import BaseEntity from './BaseEntity';
 import MeetingMember from './MeetingMember';
 
 @Entity({ name: 'meeting_member_schedule' })
-export default class MeetingMemberSchedule {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class MeetingMemberSchedule extends BaseEntity {
     @Column({ name: 'start_date' })
     startDate!: Date;
 
     @Column({ name: 'end_date' })
     endDate!: Date;
-
-    @CreateDateColumn({
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @UpdateDateColumn({
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 
     @ManyToOne(
         () => MeetingMember,

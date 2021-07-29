@@ -1,16 +1,8 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
+import BaseEntity from './BaseEntity';
 
 @Entity({ name: 'station' })
-export default class Station {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class Station extends BaseEntity {
     @Column({ length: 63, update: false })
     name!: string;
 
@@ -22,14 +14,4 @@ export default class Station {
 
     @Column({ type: 'float', update: false })
     lng!: number;
-
-    @CreateDateColumn({
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @UpdateDateColumn({
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 }

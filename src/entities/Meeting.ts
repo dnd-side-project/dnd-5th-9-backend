@@ -1,21 +1,11 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    OneToOne,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany, OneToOne } from 'typeorm';
+import BaseEntity from './BaseEntity';
 import MeetingMember from './MeetingMember';
 import MeetingSchedule from './MeetingSchedule';
 import UserToMeeting from './UserToMeeting';
 
 @Entity({ name: 'meeting' })
-export default class Meeting {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class Meeting extends BaseEntity {
     @Column()
     title!: string;
 
@@ -27,16 +17,6 @@ export default class Meeting {
 
     @Column({ name: 'place_yn', type: 'boolean', default: true })
     placeYn!: boolean;
-
-    @CreateDateColumn({
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @UpdateDateColumn({
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 
     @OneToOne(
         () => MeetingSchedule,

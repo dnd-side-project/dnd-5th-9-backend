@@ -1,22 +1,11 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    OneToMany,
-    JoinColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import BaseEntity from './BaseEntity';
 import User from './User';
 import MeetingMemberSchedule from './MeetingMemberSchedule';
 import Meeting from './Meeting';
 
 @Entity({ name: 'meeting_member' })
-export default class MeetingMember {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class MeetingMember extends BaseEntity {
     @Column()
     name!: string;
 
@@ -31,16 +20,6 @@ export default class MeetingMember {
 
     @Column({ type: 'float' })
     lng?: number;
-
-    @CreateDateColumn({
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @UpdateDateColumn({
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 
     @OneToMany(
         () => MeetingMemberSchedule,

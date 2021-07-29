@@ -1,19 +1,10 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
+import BaseEntity from './BaseEntity';
 import MeetingMember from './MeetingMember';
 import UserToMeeting from './UserToMeeting';
 
 @Entity({ name: 'user' })
-export default class User {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
+export default class User extends BaseEntity {
     @Column({ length: 63 })
     email!: string;
 
@@ -25,16 +16,6 @@ export default class User {
 
     @Column({ length: 1023 })
     token!: string;
-
-    @CreateDateColumn({
-        name: 'created_at',
-    })
-    createdAt: Date;
-
-    @UpdateDateColumn({
-        name: 'updated_at',
-    })
-    updatedAt: Date;
 
     @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.user)
     meetingMembers: MeetingMember[] | undefined;
