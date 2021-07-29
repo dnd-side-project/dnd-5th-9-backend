@@ -4,6 +4,7 @@ import Meeting from './src/entities/Meeting';
 import MeetingMember from './src/entities/MeetingMember';
 import MeetingMemberSchedule from './src/entities/MeetingMemberSchedule';
 import MeetingSchedule from './src/entities/MeetingSchedule';
+import MeetingPlace from './src/entities/MeetingPlace';
 import Station from './src/entities/Station';
 import User from './src/entities/User';
 import UserToMeeting from './src/entities/UserToMeeting';
@@ -21,6 +22,7 @@ const config: TypeOrmModuleOptions = {
         MeetingMember,
         MeetingMemberSchedule,
         MeetingSchedule,
+        MeetingPlace,
         Station,
         User,
         UserToMeeting,

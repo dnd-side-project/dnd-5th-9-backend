@@ -1,8 +1,16 @@
-import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    ManyToOne,
+    OneToMany,
+    JoinColumn,
+    OneToOne,
+} from 'typeorm';
 import BaseEntity from './BaseEntity';
 import User from './User';
 import MeetingMemberSchedule from './MeetingMemberSchedule';
 import Meeting from './Meeting';
+import MeetingPlace from './MeetingPlace';
 
 @Entity({ name: 'meeting_member' })
 export default class MeetingMember extends BaseEntity {
@@ -15,11 +23,8 @@ export default class MeetingMember extends BaseEntity {
     @Column()
     auth!: boolean;
 
-    @Column({ type: 'float' })
-    lat?: number;
-
-    @Column({ type: 'float' })
-    lng?: number;
+    @OneToOne(() => MeetingPlace, (meetingPlace) => meetingPlace.meetingMember)
+    meetingPlace: MeetingPlace | undefined;
 
     @OneToMany(
         () => MeetingMemberSchedule,
