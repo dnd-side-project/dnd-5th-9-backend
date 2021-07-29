@@ -7,7 +7,7 @@ import Meeting from './Meeting';
 @Entity({ name: 'meeting_member' })
 export default class MeetingMember extends BaseEntity {
     @Column()
-    name!: string;
+    nickname!: string;
 
     @Column({ length: 511, nullable: true })
     password?: string;
