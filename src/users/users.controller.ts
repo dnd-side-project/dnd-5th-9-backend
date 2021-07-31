@@ -6,20 +6,28 @@ import {
     Patch,
     Param,
     Delete,
+    NotFoundException,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { CheckUserDto } from './dto/check-user.dto';
 
-@ApiTags('user')
-@Controller('user')
-export class UserController {
-    constructor(private readonly userService: UserService) {}
+@ApiTags('users')
+@Controller('users')
+export class UsersController {
+    constructor(private readonly userService: UsersService) {}
 
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
+    }
+
+    @Post('check')
+    async checkUser(@Body() checkUserDto: CheckUserDto) {
+        const result = await this.userService.check(checkUserDto);
+        if (!result) throw new NotFoundException();
     }
 
     @Get()
