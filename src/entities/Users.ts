@@ -3,7 +3,7 @@ import BaseEntity from './BaseEntity';
 import MeetingMember from './MeetingMember';
 import UserToMeeting from './UserToMeeting';
 
-@Entity({ name: 'user' })
+@Entity({ name: 'users' })
 export default class User extends BaseEntity {
     @Column({ length: 63 })
     email!: string;

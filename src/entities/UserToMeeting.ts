@@ -1,7 +1,7 @@
 import { Entity, JoinColumn, ManyToOne } from 'typeorm';
 import BaseEntity from './BaseEntity';
-import Meeting from './Meeting';
-import User from './User';
+import Meetings from './Meetings';
+import User from './Users';
 
 @Entity({ name: 'user_to_meeting' })
 export default class UserToMeeting extends BaseEntity {
@@ -9,7 +9,7 @@ export default class UserToMeeting extends BaseEntity {
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @ManyToOne(() => Meeting, (meeting) => meeting.userToMeetings)
+    @ManyToOne(() => Meetings, (meetings) => meetings.userToMeetings)
     @JoinColumn({ name: 'meeting_id' })
-    meeting: Meeting;
+    meetings: Meetings;
 }
