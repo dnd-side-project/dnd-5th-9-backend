@@ -19,7 +19,7 @@ import { LoginDto } from './dto/login.dto';
 export class UsersService {
     constructor(
         @InjectRepository(Users)
-        private userRepository: Repository<Users>,
+        private usersRepository: Repository<Users>,
         private jwtService: JwtService
     ) {}
 
@@ -36,7 +36,7 @@ export class UsersService {
 
     async create(data: CreateUserDto) {
         const hashedPassword = await bcrypt.hash(data.password, 12);
-        const email = await this.userRepository.findOne({
+        const email = await this.usersRepository.findOne({
             where: { email: data.email },
             withDeleted: true,
         });
@@ -56,7 +56,7 @@ export class UsersService {
 
         insertUser.token = accessToken;
 
-        const join = await this.userRepository.save(insertUser);
+        const join = await this.usersRepository.save(insertUser);
 
         return {
             result: true,
@@ -70,7 +70,7 @@ export class UsersService {
     }
 
     async login(data: LoginDto) {
-        const user = await this.userRepository.findOne({
+        const user = await this.usersRepository.findOne({
             where: { email: data.email },
             select: ['id', 'email', 'name', 'password'],
         });
@@ -83,7 +83,7 @@ export class UsersService {
 
         if (result) {
             const token = await this.getAccessToken(user);
-            await this.userRepository
+            await this.usersRepository
                 .createQueryBuilder('user')
                 .update()
                 .set({ token: token });
@@ -105,7 +105,7 @@ export class UsersService {
     }
 
     async removeUser(id: number) {
-        const user = await this.userRepository.findOne({
+        const user = await this.usersRepository.findOne({
             where: { id: id },
         });
 
@@ -113,7 +113,7 @@ export class UsersService {
             throw new UnauthorizedException('회원정보가 존재하지 않습니다.');
         }
 
-        await this.userRepository.delete({ id: id });
+        await this.usersRepository.delete({ id: id });
 
         return {
             result: true,
@@ -125,7 +125,7 @@ export class UsersService {
     }
 
     async check({ email }: CheckUserDto): Promise<boolean> {
-        const user = await this.userRepository.findOne({ email });
+        const user = await this.usersRepository.findOne({ email });
         if (!user) return false;
         const title = '[moida] 비밀번호 변경 안내 메일';
         const content = `
@@ -147,9 +147,9 @@ export class UsersService {
         token,
         password,
     }: UpdatePasswordDto): Promise<boolean> {
-        const user = await this.userRepository.findOne({ token });
+        const user = await this.usersRepository.findOne({ token });
         if (!user) return false;
-        await this.userRepository.update({ token }, { password });
+        await this.usersRepository.update({ token }, { password });
         return true;
     }
 
