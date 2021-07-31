@@ -10,7 +10,6 @@ interface MailForm {
 }
 
 const sendMail = ({ email, title, content }: MailForm) => {
-    console.log(`nodemailer: ${nodemailer}`);
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         host: process.env.MAIL_EMAIL,
