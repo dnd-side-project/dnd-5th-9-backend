@@ -5,10 +5,10 @@ import MeetingMembers from './MeetingMembers';
 @Entity({ name: 'meeting_places' })
 export default class MeetingPlaces extends BaseEntity {
     @Column({ type: 'float' })
-    lat?: number;
+    lat: number;
 
     @Column({ type: 'float' })
-    lng?: number;
+    lng: number;
 
     @OneToOne(
         () => MeetingMembers,
