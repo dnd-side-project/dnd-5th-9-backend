@@ -69,6 +69,22 @@ export class MeetingsService {
         }
     }
 
+    async checkOverlapName(meetingId: number, nickname: string) {
+        const checkOverlap = await this.meetingMembersRepository
+            .createQueryBuilder()
+            .where('nickname=:nickname', { nickname: nickname })
+            .andWhere('meeting_id=:meetingId', { meetingId: meetingId })
+            .getCount();
+
+        return {
+            result: true,
+            code: 200,
+            data: {
+                checkOverlap: checkOverlap,
+            },
+        };
+    }
+
     async createPlace({
         memberId,
         lat,
