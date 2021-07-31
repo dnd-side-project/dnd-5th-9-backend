@@ -1,15 +1,21 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nodemailer = require('nodemailer');
+import { IsString } from 'class-validator';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-interface MailForm {
+export class MailDto {
+    @IsString()
     email: string;
+
+    @IsString()
     title: string;
+
+    @IsString()
     content: string;
 }
 
-const sendMail = ({ email, title, content }: MailForm) => {
+const sendMail = ({ email, title, content }: MailDto) => {
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         host: process.env.MAIL_EMAIL,
