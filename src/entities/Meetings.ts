@@ -4,8 +4,8 @@ import MeetingMember from './MeetingMember';
 import MeetingSchedule from './MeetingSchedule';
 import UserToMeeting from './UserToMeeting';
 
-@Entity({ name: 'meeting' })
-export default class Meeting extends BaseEntity {
+@Entity({ name: 'meetings' })
+export default class Meetings extends BaseEntity {
     @Column()
     title!: string;
 
@@ -20,13 +20,13 @@ export default class Meeting extends BaseEntity {
 
     @OneToOne(
         () => MeetingSchedule,
-        (meetingSchedule) => meetingSchedule.meeting
+        (meetingSchedule) => meetingSchedule.meetings
     )
     meetingSchedule: MeetingSchedule | undefined;
 
-    @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meeting)
+    @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meetings)
     meetingMembers: MeetingMember[] | undefined;
 
-    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.meeting)
+    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.meetings)
     userToMeetings: UserToMeeting[] | undefined;
 }

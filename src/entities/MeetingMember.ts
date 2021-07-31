@@ -7,9 +7,9 @@ import {
     OneToOne,
 } from 'typeorm';
 import BaseEntity from './BaseEntity';
-import User from './User';
+import User from './Users';
 import MeetingMemberSchedule from './MeetingMemberSchedule';
-import Meeting from './Meeting';
+import Meetings from './Meetings';
 import MeetingPlace from './MeetingPlace';
 
 @Entity({ name: 'meeting_member' })
@@ -32,9 +32,9 @@ export default class MeetingMember extends BaseEntity {
     )
     meetingMemberSchedules: MeetingMemberSchedule[] | undefined;
 
-    @ManyToOne(() => Meeting, (meeting) => meeting.meetingMembers)
+    @ManyToOne(() => Meetings, (meetings) => meetings.meetingMembers)
     @JoinColumn({ name: 'meeting_id' })
-    meeting!: Meeting;
+    meetings!: Meetings;
 
     @ManyToOne(() => User, (user) => user.meetingMembers)
     @JoinColumn({ name: 'user_id' })

@@ -1,6 +1,6 @@
 import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import BaseEntity from './BaseEntity';
-import Meeting from './Meeting';
+import Meetings from './Meetings';
 
 @Entity({ name: 'meeting_schedule' })
 export default class MeetingSchedule extends BaseEntity {
@@ -10,7 +10,7 @@ export default class MeetingSchedule extends BaseEntity {
     @Column({ name: 'end_date' })
     endDate!: Date;
 
-    @OneToOne(() => Meeting, (meeting) => meeting.meetingSchedule)
+    @OneToOne(() => Meetings, (meetings) => meetings.meetingSchedule)
     @JoinColumn({ name: 'meeting_id' })
-    meeting!: Meeting;
+    meetings!: Meetings;
 }
