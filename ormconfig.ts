@@ -32,6 +32,7 @@ const config: TypeOrmModuleOptions = {
     autoLoadEntities: true,
     charset: 'utf8mb4',
     synchronize: true,
+    logging: true,
     keepConnectionAlive: true,
 };
 
