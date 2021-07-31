@@ -1,8 +1,8 @@
 import { Entity, Column } from 'typeorm';
 import BaseEntity from './BaseEntity';
 
-@Entity({ name: 'station' })
-export default class Station extends BaseEntity {
+@Entity({ name: 'stations' })
+export default class Stations extends BaseEntity {
     @Column({ length: 63, update: false })
     name!: string;
 

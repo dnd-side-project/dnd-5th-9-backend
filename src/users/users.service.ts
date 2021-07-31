@@ -3,6 +3,7 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CheckUserDto } from './dto/check-user.dto';
@@ -124,7 +125,7 @@ export class UsersService {
     }
 
     async check({ email }: CheckUserDto): Promise<boolean> {
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userRepository.findOne({ email });
         if (!user) return false;
         const title = '[moida] 비밀번호 변경 안내 메일';
         const content = `
@@ -139,6 +140,16 @@ export class UsersService {
             title,
             content,
         });
+        return true;
+    }
+
+    async updatePassword({
+        token,
+        password,
+    }: UpdatePasswordDto): Promise<boolean> {
+        const user = await this.userRepository.findOne({ token });
+        if (!user) return false;
+        await this.userRepository.update({ token }, { password });
         return true;
     }
 

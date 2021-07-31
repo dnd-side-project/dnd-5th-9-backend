@@ -7,13 +7,13 @@ import {
     OneToOne,
 } from 'typeorm';
 import BaseEntity from './BaseEntity';
-import User from './Users';
-import MeetingMemberSchedule from './MeetingMemberSchedule';
+import Users from './Users';
+import MeetingMemberSchedules from './MeetingMemberSchedules';
 import Meetings from './Meetings';
-import MeetingPlace from './MeetingPlace';
+import MeetingPlaces from './MeetingPlaces';
 
-@Entity({ name: 'meeting_member' })
-export default class MeetingMember extends BaseEntity {
+@Entity({ name: 'meeting_members' })
+export default class MeetingMembers extends BaseEntity {
     @Column()
     nickname!: string;
 
@@ -23,20 +23,20 @@ export default class MeetingMember extends BaseEntity {
     @Column()
     auth!: boolean;
 
-    @OneToOne(() => MeetingPlace, (meetingPlace) => meetingPlace.meetingMember)
-    meetingPlace: MeetingPlace | undefined;
+    @OneToOne(() => MeetingPlaces, (meetingPlace) => meetingPlace.meetingMember)
+    meetingPlace: MeetingPlaces | undefined;
 
     @OneToMany(
-        () => MeetingMemberSchedule,
+        () => MeetingMemberSchedules,
         (meetingMemberSchedule) => meetingMemberSchedule.meetingMember
     )
-    meetingMemberSchedules: MeetingMemberSchedule[] | undefined;
+    meetingMemberSchedules: MeetingMemberSchedules[] | undefined;
 
     @ManyToOne(() => Meetings, (meetings) => meetings.meetingMembers)
     @JoinColumn({ name: 'meeting_id' })
     meetings!: Meetings;
 
-    @ManyToOne(() => User, (user) => user.meetingMembers)
+    @ManyToOne(() => Users, (user) => user.meetingMembers)
     @JoinColumn({ name: 'user_id' })
-    user!: User;
+    user!: Users;
 }

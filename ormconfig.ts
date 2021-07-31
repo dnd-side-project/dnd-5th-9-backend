@@ -1,13 +1,13 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import Meeting from './src/entities/Meetings';
-import MeetingMember from './src/entities/MeetingMember';
-import MeetingMemberSchedule from './src/entities/MeetingMemberSchedule';
-import MeetingSchedule from './src/entities/MeetingSchedule';
-import MeetingPlace from './src/entities/MeetingPlace';
-import Station from './src/entities/Station';
-import User from './src/entities/Users';
-import UserToMeeting from './src/entities/UserToMeeting';
+import Meetings from './src/entities/Meetings';
+import MeetingMembers from './src/entities/MeetingMembers';
+import MeetingMemberSchedules from './src/entities/MeetingMemberSchedules';
+import MeetingSchedules from './src/entities/MeetingSchedules';
+import MeetingPlaces from './src/entities/MeetingPlaces';
+import Stations from './src/entities/Stations';
+import Users from './src/entities/Users';
+import UsersToMeetings from './src/entities/UsersToMeetings';
 dotenv.config();
 
 const config: TypeOrmModuleOptions = {
@@ -18,14 +18,14 @@ const config: TypeOrmModuleOptions = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     entities: [
-        Meeting,
-        MeetingMember,
-        MeetingMemberSchedule,
-        MeetingSchedule,
-        MeetingPlace,
-        Station,
-        User,
-        UserToMeeting,
+        Meetings,
+        MeetingMembers,
+        MeetingMemberSchedules,
+        MeetingSchedules,
+        MeetingPlaces,
+        Stations,
+        Users,
+        UsersToMeetings,
     ],
     migrations: [__dirname + '/src/migration/*.ts'],
     cli: { migrationsDir: 'src/migrations' },

@@ -1,8 +1,8 @@
 import { Entity, Column, OneToMany, OneToOne } from 'typeorm';
 import BaseEntity from './BaseEntity';
-import MeetingMember from './MeetingMember';
-import MeetingSchedule from './MeetingSchedule';
-import UserToMeeting from './UserToMeeting';
+import MeetingMembers from './MeetingMembers';
+import MeetingSchedules from './MeetingSchedules';
+import UsersToMeetings from './UsersToMeetings';
 
 @Entity({ name: 'meetings' })
 export default class Meetings extends BaseEntity {
@@ -19,14 +19,14 @@ export default class Meetings extends BaseEntity {
     placeYn!: boolean;
 
     @OneToOne(
-        () => MeetingSchedule,
+        () => MeetingSchedules,
         (meetingSchedule) => meetingSchedule.meetings
     )
-    meetingSchedule: MeetingSchedule | undefined;
+    meetingSchedule: MeetingSchedules | undefined;
 
-    @OneToMany(() => MeetingMember, (meetingMember) => meetingMember.meetings)
-    meetingMembers: MeetingMember[] | undefined;
+    @OneToMany(() => MeetingMembers, (meetingMember) => meetingMember.meetings)
+    meetingMembers: MeetingMembers[] | undefined;
 
-    @OneToMany(() => UserToMeeting, (userToMeeting) => userToMeeting.meetings)
-    userToMeetings: UserToMeeting[] | undefined;
+    @OneToMany(() => UsersToMeetings, (userToMeeting) => userToMeeting.meetings)
+    userToMeetings: UsersToMeetings[] | undefined;
 }
