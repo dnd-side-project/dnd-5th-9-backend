@@ -7,15 +7,16 @@ import {
     Param,
     Delete,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import sendMail from 'src/lib/sendMail';
 
-@ApiTags('user')
-@Controller('user')
-export class UserController {
-    constructor(private readonly userService: UserService) {}
+@ApiTags('users')
+@Controller('users')
+export class UsersController {
+    constructor(private readonly userService: UsersService) {}
 
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
