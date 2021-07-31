@@ -4,9 +4,12 @@ import { MeetingsService } from './meetings.service';
 import { MeetingsController } from './meetings.controller';
 import MeetingPlaces from '../entities/MeetingPlaces';
 import MeetingMembers from '../entities/MeetingMembers';
+import Meetings from '../entities/Meetings';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([MeetingMembers, MeetingPlaces])],
+    imports: [
+        TypeOrmModule.forFeature([MeetingMembers, MeetingPlaces, Meetings]),
+    ],
     controllers: [MeetingsController],
     providers: [MeetingsService],
 })
