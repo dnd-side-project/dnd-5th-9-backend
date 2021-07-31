@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import BaseEntity from './BaseEntity';
-import MeetingMember from './MeetingMember';
+import MeetingMembers from './MeetingMembers';
 
-@Entity({ name: 'meeting_place' })
-export default class MeetingPlace extends BaseEntity {
+@Entity({ name: 'meeting_places' })
+export default class MeetingPlaces extends BaseEntity {
     @Column({ type: 'float' })
     lat?: number;
 
@@ -11,9 +11,9 @@ export default class MeetingPlace extends BaseEntity {
     lng?: number;
 
     @OneToOne(
-        () => MeetingMember,
+        () => MeetingMembers,
         (meetingMember) => meetingMember.meetingPlace
     )
     @JoinColumn({ name: 'meeting_member_id' })
-    meetingMember!: MeetingMember;
+    meetingMember!: MeetingMembers;
 }
