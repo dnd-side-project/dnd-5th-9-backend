@@ -1,0 +1,10 @@
+diff a/src/meetings/meetings.controller.ts b/src/meetings/meetings.controller.ts	(rejected hunks)
+@@ -26,7 +26,7 @@
+         @Param('meetingId') meetingId: number,
+         @Param('nickname') nickname: string
+     ) {
+-        return this.meetingsService.checkOverlapName(meetingId, nickname);
++        return this.meetingsService.checkOverlapnickname(meetingId, nickname);
+     }
+ 
+     @Post('place')
