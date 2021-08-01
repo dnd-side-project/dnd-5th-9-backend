@@ -159,9 +159,20 @@ export class MeetingsService {
     async findMeetingsList() {
         const list = await this.meetingsRepository
             .createQueryBuilder('meetings')
-            .select()
-            .where('userId=:userId', { userId: 1 })
-            .getOne();
+            .innerJoinAndSelect('meetings.userToMeetings', 'userToMeetings')
+            .innerJoinAndSelect('userToMeetings.user', 'user')
+            .innerJoinAndSelect('meetings.meetingMembers', 'meetingMembers')
+            .where('user.id = :user_id', { user_id: 1 })
+            .select([
+                'meetings.id as id',
+                'meetings.title as titls',
+                'meetings.param as param',
+                'meetings.description as description',
+                'meetings.placeYn as place_yn',
+                'date_format(userToMeetings.createdAt, "%Y-%m-%d %h:%i:%s") as created_at',
+                'meetingMembers.auth as auth',
+            ])
+            .getRawMany();
 
         return {
             result: true,
