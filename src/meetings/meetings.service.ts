@@ -69,6 +69,21 @@ export class MeetingsService {
         }
     }
 
+    async getMembers(meetingId: number): Promise<MeetingMembers[] | undefined> {
+        try {
+            const meeting = await this.meetingsRepository
+                .createQueryBuilder('meetings')
+                .where('meetings.id =:meetingId', { meetingId })
+                .leftJoin('meetings.meetingMembers', 'member')
+                .addSelect(['member.id', 'member.nickname', 'member.auth'])
+                .getOne();
+            if (!meeting) return undefined;
+            return meeting.meetingMembers;
+        } catch (err) {
+            throw err;
+        }
+    }
+
     async checkOverlapNickname(meetingId: number, nickname: string) {
         const checkOverlap = await this.meetingMembersRepository
             .createQueryBuilder()
