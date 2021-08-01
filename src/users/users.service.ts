@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CheckUserDto } from './dto/check-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import sendMail from '../lib/sendMail';
 import Users from '../entities/Users';
 import * as bcrypt from 'bcrypt';
@@ -151,21 +150,5 @@ export class UsersService {
         if (!user) return false;
         await this.usersRepository.update({ token }, { password });
         return true;
-    }
-
-    findAll() {
-        return `This action returns all user`;
-    }
-
-    findOne(id: number) {
-        return `This action returns a #${id} user`;
-    }
-
-    update(id: number, updateUserDto: UpdateUserDto) {
-        return `This action updates a #${id} user`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} user`;
     }
 }
