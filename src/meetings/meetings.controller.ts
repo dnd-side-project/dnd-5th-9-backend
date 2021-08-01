@@ -21,6 +21,14 @@ export class MeetingsController {
         return this.meetingsService.create(createMeetingDto);
     }
 
+    @Get('/:meetingId/:nickname')
+    checkOverlapNickname(
+        @Param('meetingId') meetingId: number,
+        @Param('nickname') nickname: string
+    ) {
+        return this.meetingsService.checkOverlapNickname(meetingId, nickname);
+    }
+
     @Post('place')
     createPlace(@Body() createMeetingPlaceDto: CreateMeetingPlaceDto) {
         return this.meetingsService.createPlace(createMeetingPlaceDto);
