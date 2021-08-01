@@ -4,11 +4,11 @@ import {
     Get,
     Post,
     Body,
-    Patch,
     Param,
     Delete,
     NotFoundException,
     UnauthorizedException,
+    Put,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
@@ -54,12 +54,12 @@ export class MeetingsController {
         return this.meetingsService.findOne(+id);
     }
 
-    @Patch(':id')
+    @Put('/:meetingsId')
     update(
-        @Param('id') id: string,
+        @Param('meetingsId') meetingsId: number,
         @Body() updateMeetingDto: UpdateMeetingDto
     ) {
-        return this.meetingsService.update(+id, updateMeetingDto);
+        return this.meetingsService.update(meetingsId, updateMeetingDto);
     }
 
     @Delete(':id')

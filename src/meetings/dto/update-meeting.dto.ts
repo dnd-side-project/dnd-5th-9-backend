@@ -1,4 +1,20 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateMeetingDto } from './create-meeting.dto';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdateMeetingDto extends PartialType(CreateMeetingDto) {}
+export class UpdateMeetingDto {
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: '오구오구 6주차 모임 수정입니다. ',
+        description: '제목',
+    })
+    public title: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: '오구오구 6주차 수정입니다.  ',
+        description: '설명',
+    })
+    public description: string;
+}
