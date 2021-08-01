@@ -7,6 +7,7 @@ import {
     Patch,
     Param,
     Delete,
+    NotFoundException,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
@@ -19,6 +20,13 @@ export class MeetingsController {
     @Post()
     create(@Body() createMeetingDto: CreateMeetingDto) {
         return this.meetingsService.create(createMeetingDto);
+    }
+
+    @Get('member/:meetingId')
+    async getMembers(@Param('meetingId') meetingId: number) {
+        const result = await this.meetingsService.getMembers(meetingId);
+        if (!result) throw new NotFoundException();
+        return result;
     }
 
     @Get('/:meetingId/:nickname')
