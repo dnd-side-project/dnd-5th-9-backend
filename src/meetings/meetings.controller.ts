@@ -44,9 +44,9 @@ export class MeetingsController {
         return this.meetingsService.createPlace(createMeetingPlaceDto);
     }
 
-    @Get()
-    findAll() {
-        return this.meetingsService.findAll();
+    @Get('list')
+    findMeetingsList() {
+        return this.meetingsService.findMeetingsList();
     }
 
     @Get(':id')

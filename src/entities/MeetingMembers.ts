@@ -17,9 +17,6 @@ export default class MeetingMembers extends BaseEntity {
     @Column()
     nickname!: string;
 
-    @Column({ length: 511, nullable: true })
-    password?: string;
-
     @Column()
     auth!: boolean;
 

@@ -3,7 +3,7 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { uuid } from 'uuidv4';
 import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
@@ -14,16 +14,22 @@ import MeetingMembers from '../entities/MeetingMembers';
 import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
 import Users from '../entities/Users';
+import UsersToMeetings from '../entities/UsersToMeetings';
 
 @Injectable()
 export class MeetingsService {
     constructor(
+        private connection: Connection,
         @InjectRepository(MeetingPlaces)
         private meetingPlacesRepository: Repository<MeetingPlaces>,
         @InjectRepository(MeetingMembers)
         private meetingMembersRepository: Repository<MeetingMembers>,
         @InjectRepository(Meetings)
-        private meetingsRepository: Repository<Meetings>
+        private meetingsRepository: Repository<Meetings>,
+        @InjectRepository(MeetingSchedules)
+        private meetingSchedulesRepository: Repository<MeetingSchedules>,
+        @InjectRepository(UsersToMeetings)
+        private usersToMeetingsRepository: Repository<UsersToMeetings>
     ) {}
 
     async create(data: CreateMeetingDto) {
@@ -47,9 +53,15 @@ export class MeetingsService {
         meetingSchedules.endDate = new Date(data.endDate);
 
         // 가드 설정 안함. 회원 1번일때를 가정하고 제작
+        const users = new Users();
+        users.id = 1;
+
         const meetingMembers = new MeetingMembers();
-        meetingMembers.id = 1;
+        meetingMembers.user = users;
         meetingMembers.auth = true;
+
+        const usersToMeetings = new UsersToMeetings();
+        usersToMeetings.user = users;
 
         const meetings = new Meetings();
         meetings.title = data.title;
@@ -57,8 +69,21 @@ export class MeetingsService {
         meetings.placeYn = data.placeYn;
         meetings.param = param;
 
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
         try {
             const createMeeting = await this.meetingsRepository.save(meetings);
+
+            meetingMembers.meetings = createMeeting;
+            meetingSchedules.meetings = createMeeting;
+            usersToMeetings.meetings = createMeeting;
+
+            await this.meetingMembersRepository.save(meetingMembers);
+            await this.meetingSchedulesRepository.save(meetingSchedules);
+            await this.usersToMeetingsRepository.save(usersToMeetings);
+
             if (createMeeting) {
                 return {
                     result: true,
@@ -71,6 +96,8 @@ export class MeetingsService {
             }
         } catch (err) {
             throw err;
+        } finally {
+            await queryRunner.release();
         }
     }
 
@@ -123,14 +150,28 @@ export class MeetingsService {
         return result.raw.insertId;
     }
 
-    findAll() {
-        return `This action returns all meetings`;
+    // 회원전용,유저 가드 붙여서 수정해야함. 1번이라는 가정하에 제작
+    async findMeetingsList() {
+        const list = await this.meetingsRepository
+            .createQueryBuilder('meetings')
+            .select()
+            .where('userId=:userId', { userId: 1 })
+            .getOne();
+
+        return {
+            result: true,
+            code: 200,
+            data: {
+                list: list,
+            },
+        };
     }
 
     findOne(id: number) {
         return `This action returns a #${id} meeting`;
     }
 
+    // 유저 가드붙여서 유저 검증작업이 필요함.
     async update(meetingsId: number, updateMeetingDto: UpdateMeetingDto) {
         const meetings = await this.meetingsRepository.findOne({
             where: { id: meetingsId },
