@@ -36,7 +36,9 @@ export default class MeetingMembers extends BaseEntity {
     @JoinColumn({ name: 'meeting_id' })
     meetings!: Meetings;
 
-    @ManyToOne(() => Users, (user) => user.meetingMembers)
+    @ManyToOne(() => Users, (user) => user.meetingMembers, {
+        onDelete: 'NO ACTION',
+    })
     @JoinColumn({ name: 'user_id' })
     user!: Users;
 }
