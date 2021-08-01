@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { uuid } from 'uuidv4';
@@ -127,8 +131,38 @@ export class MeetingsService {
         return `This action returns a #${id} meeting`;
     }
 
-    update(id: number, updateMeetingDto: UpdateMeetingDto) {
-        return `This action updates a #${id} meeting`;
+    async update(meetingsId: number, updateMeetingDto: UpdateMeetingDto) {
+        const meetings = await this.meetingsRepository.findOne({
+            where: { id: meetingsId },
+        });
+
+        if (!meetings) {
+            throw new UnauthorizedException('미팅정보가 존재하지 않습니다.');
+        }
+
+        try {
+            await this.meetingsRepository
+                .createQueryBuilder('meetings')
+                .update(Meetings)
+                .set({
+                    title: updateMeetingDto.title,
+                    description: updateMeetingDto.description,
+                })
+                .where('id=:meetingsId', { meetingsId: 2 })
+                .execute();
+
+            return {
+                result: true,
+                code: 200,
+                data: {
+                    message: '모임을 수정했습니다. ',
+                },
+            };
+        } catch (err) {
+            throw new BadRequestException({
+                message: '모임수정 중 오류가 발생했습니다.',
+            });
+        }
     }
 
     remove(id: number) {
