@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { uuid } from 'uuidv4';
 import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
@@ -8,7 +9,7 @@ import MeetingPlaces from '../entities/MeetingPlaces';
 import MeetingMembers from '../entities/MeetingMembers';
 import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
-import { uuid } from 'uuidv4';
+import Users from '../entities/Users';
 
 @Injectable()
 export class MeetingsService {
@@ -132,5 +133,30 @@ export class MeetingsService {
 
     remove(id: number) {
         return `This action removes a #${id} meeting`;
+    }
+
+    async isAuth(user: Users, meetingId: number) {
+        try {
+            const member = await this.meetingMembersRepository
+                .createQueryBuilder()
+                .where('id =:meetingId', { meetingId })
+                .andWhere('user_id =:userId', { userId: user.id })
+                .getOne();
+            return member.auth;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async removeMember(memberId: number) {
+        try {
+            this.meetingMembersRepository
+                .createQueryBuilder()
+                .where('id=:memberId', { memberId })
+                .delete()
+                .execute();
+        } catch (err) {
+            throw err;
+        }
     }
 }

@@ -8,10 +8,12 @@ import {
     Param,
     Delete,
     NotFoundException,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import Users from '../entities/Users';
 
 @Controller('meetings')
 export class MeetingsController {
@@ -63,5 +65,15 @@ export class MeetingsController {
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.meetingsService.remove(+id);
+    }
+
+    @Delete(':meetingId/member/:memberId')
+    removeMember(
+        @Param('meetingId') meetingId: number,
+        @Param('memberId') memberId: number
+    ) {
+        const isAuth = this.meetingsService.isAuth(new Users(), meetingId); //TODO: 인가 기능 구현되면 실제 user 넣어야 함
+        if (!isAuth) throw new UnauthorizedException();
+        this.meetingsService.removeMember(memberId);
     }
 }
