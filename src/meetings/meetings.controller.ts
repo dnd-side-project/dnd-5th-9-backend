@@ -49,22 +49,12 @@ export class MeetingsController {
         return this.meetingsService.findMeetingsList();
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.meetingsService.findOne(+id);
-    }
-
     @Put('/:meetingsId')
     update(
         @Param('meetingsId') meetingsId: number,
         @Body() updateMeetingDto: UpdateMeetingDto
     ) {
         return this.meetingsService.update(meetingsId, updateMeetingDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.meetingsService.remove(+id);
     }
 
     @Delete(':meetingId/member/:memberId')

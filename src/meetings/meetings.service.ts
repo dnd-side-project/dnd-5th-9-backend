@@ -48,41 +48,44 @@ export class MeetingsService {
             param = uuid();
         }
 
-        const meetingSchedules = new MeetingSchedules();
-        meetingSchedules.startDate = new Date(data.startDate);
-        meetingSchedules.endDate = new Date(data.endDate);
-
-        // 가드 설정 안함. 회원 1번일때를 가정하고 제작
-        const users = new Users();
-        users.id = 1;
-
-        const meetingMembers = new MeetingMembers();
-        meetingMembers.user = users;
-        meetingMembers.auth = true;
-
-        const usersToMeetings = new UsersToMeetings();
-        usersToMeetings.user = users;
-
-        const meetings = new Meetings();
-        meetings.title = data.title;
-        meetings.description = data.description;
-        meetings.placeYn = data.placeYn;
-        meetings.param = param;
-
         const queryRunner = this.connection.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
         try {
+            const meetings = new Meetings();
+            meetings.title = data.title;
+            meetings.description = data.description;
+            meetings.placeYn = data.placeYn;
+            meetings.param = param;
+
             const createMeeting = await this.meetingsRepository.save(meetings);
+
+            const meetingMembers = new MeetingMembers();
+            meetingMembers.nickname = data.nickname;
+            meetingMembers.auth = true;
+
+            const meetingSchedules = new MeetingSchedules();
+            meetingSchedules.startDate = new Date(data.startDate);
+            meetingSchedules.endDate = new Date(data.endDate);
+
+            // 가드 설정 안함. 회원 1번일때를 가정하고 제작
+            const userId = 1;
+            if (userId == 1) {
+                const users = new Users();
+                const usersToMeetings = new UsersToMeetings();
+                users.id = userId;
+                meetingMembers.user = users;
+                usersToMeetings.user = users;
+                usersToMeetings.meetings = createMeeting;
+                await this.usersToMeetingsRepository.save(usersToMeetings);
+            }
 
             meetingMembers.meetings = createMeeting;
             meetingSchedules.meetings = createMeeting;
-            usersToMeetings.meetings = createMeeting;
 
             await this.meetingMembersRepository.save(meetingMembers);
             await this.meetingSchedulesRepository.save(meetingSchedules);
-            await this.usersToMeetingsRepository.save(usersToMeetings);
 
             if (createMeeting) {
                 return {
@@ -95,7 +98,9 @@ export class MeetingsService {
                 };
             }
         } catch (err) {
-            throw err;
+            throw new BadRequestException({
+                message: '모임생성 중 오류가 발생했습니다.',
+            });
         } finally {
             await queryRunner.release();
         }
@@ -167,10 +172,6 @@ export class MeetingsService {
         };
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} meeting`;
-    }
-
     // 유저 가드붙여서 유저 검증작업이 필요함.
     async update(meetingsId: number, updateMeetingDto: UpdateMeetingDto) {
         const meetings = await this.meetingsRepository.findOne({
@@ -204,10 +205,6 @@ export class MeetingsService {
                 message: '모임수정 중 오류가 발생했습니다.',
             });
         }
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} meeting`;
     }
 
     async isAuth(user: Users, meetingId: number) {

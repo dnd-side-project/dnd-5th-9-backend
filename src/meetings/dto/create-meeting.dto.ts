@@ -18,6 +18,14 @@ export class CreateMeetingDto {
     })
     public description: string;
 
+    @IsString()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: '석진리다',
+        description: '닉네임',
+    })
+    public nickname: string;
+
     @IsBoolean()
     @IsNotEmpty()
     @ApiProperty({

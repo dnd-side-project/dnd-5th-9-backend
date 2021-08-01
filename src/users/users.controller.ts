@@ -15,7 +15,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { CheckUserDto } from './dto/check-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -43,31 +42,11 @@ export class UsersController {
         if (!result) throw new NotFoundException();
     }
 
-    @Get()
-    findAll() {
-        return this.usersService.findAll();
-    }
-
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id);
-    }
-
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.usersService.update(+id, updateUserDto);
-    }
-
     @Put('password')
     async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
         const result = await this.usersService.updatePassword(
             updatePasswordDto
         );
         if (!result) throw new NotFoundException();
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.usersService.remove(+id);
     }
 }
