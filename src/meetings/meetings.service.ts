@@ -15,6 +15,13 @@ import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
 import Users from '../entities/Users';
 import UsersToMeetings from '../entities/UsersToMeetings';
+import Stations from '../entities/Stations';
+import * as geolib from 'geolib';
+
+export interface Point {
+    latitude: number;
+    longitude: number;
+}
 
 @Injectable()
 export class MeetingsService {
@@ -29,7 +36,9 @@ export class MeetingsService {
         @InjectRepository(MeetingSchedules)
         private meetingSchedulesRepository: Repository<MeetingSchedules>,
         @InjectRepository(UsersToMeetings)
-        private usersToMeetingsRepository: Repository<UsersToMeetings>
+        private usersToMeetingsRepository: Repository<UsersToMeetings>,
+        @InjectRepository(Stations)
+        private stationsRepository: Repository<Stations>
     ) {}
 
     async create(data: CreateMeetingDto) {
@@ -139,8 +148,8 @@ export class MeetingsService {
 
     async createPlace({
         memberId,
-        lat,
-        lng,
+        latitude,
+        longitude,
     }: CreateMeetingPlaceDto): Promise<number | undefined> {
         const meetingMember = await this.meetingMembersRepository.findOne(
             memberId
@@ -150,7 +159,7 @@ export class MeetingsService {
             .createQueryBuilder()
             .insert()
             .into(MeetingPlaces)
-            .values({ lat, lng, meetingMember })
+            .values({ latitude, longitude, meetingMember })
             .execute();
         return result.raw.insertId;
     }
@@ -238,6 +247,42 @@ export class MeetingsService {
                 .where('id=:memberId', { memberId })
                 .delete()
                 .execute();
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getPlace(meetingId: number) {
+        const center = await this.getCenter(meetingId);
+        if (!center) return {};
+        const stations = await this.getStations(center);
+        return {
+            center,
+            stations,
+        };
+    }
+
+    private async getCenter(meetingId: number): Promise<Point | false> {
+        try {
+            const points = await this.meetingPlacesRepository
+                .createQueryBuilder('MeetingPlaces')
+                .leftJoin('MeetingPlaces.meetingMember', 'meetingMember')
+                .where('meetingMember.meeting_id =:meetingId', { meetingId })
+                .select(['MeetingPlaces.latitude', 'MeetingPlaces.longitude'])
+                .getMany();
+            return geolib.getCenter(points);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    private async getStations(center: Point) {
+        try {
+            const stations: Point[] = await this.stationsRepository
+                .createQueryBuilder()
+                .getMany();
+            const distances = geolib.orderByDistance(center, stations);
+            return distances.slice(0, 5);
         } catch (err) {
             throw err;
         }

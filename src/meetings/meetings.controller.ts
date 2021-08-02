@@ -31,6 +31,11 @@ export class MeetingsController {
         return result;
     }
 
+    @Get('place/:meetingId')
+    getPlace(@Param('meetingId') meetingId: number) {
+        return this.meetingsService.getPlace(meetingId);
+    }
+
     @Get('/:meetingId/:nickname')
     checkOverlapNickname(
         @Param('meetingId') meetingId: number,

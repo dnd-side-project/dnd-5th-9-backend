@@ -5,8 +5,8 @@ export class CreateMeetingPlaceDto {
     memberId: number;
 
     @IsNumber()
-    lat: number;
+    latitude: number;
 
     @IsNumber()
-    lng: number;
+    longitude: number;
 }
