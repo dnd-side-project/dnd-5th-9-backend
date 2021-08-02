@@ -7,6 +7,7 @@ import MeetingMembers from '../entities/MeetingMembers';
 import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
 import UsersToMeetings from '../entities/UsersToMeetings';
+import Stations from '../entities/Stations';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import UsersToMeetings from '../entities/UsersToMeetings';
             Meetings,
             MeetingSchedules,
             UsersToMeetings,
+            Stations,
         ]),
     ],
     controllers: [MeetingsController],
