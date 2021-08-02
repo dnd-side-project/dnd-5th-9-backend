@@ -10,8 +10,8 @@ export default class Stations extends BaseEntity {
     line!: string;
 
     @Column({ type: 'float', update: false })
-    lat!: number;
+    latitude!: number;
 
     @Column({ type: 'float', update: false })
-    lng!: number;
+    longitude!: number;
 }
