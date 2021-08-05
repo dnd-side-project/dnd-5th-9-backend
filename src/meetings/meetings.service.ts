@@ -97,6 +97,7 @@ export class MeetingsService {
             await this.meetingSchedulesRepository.save(meetingSchedules);
 
             if (createMeeting) {
+                await queryRunner.commitTransaction();
                 return {
                     result: true,
                     code: 200,
@@ -107,6 +108,8 @@ export class MeetingsService {
                 };
             }
         } catch (err) {
+            console.log(err);
+            await queryRunner.rollbackTransaction();
             throw new BadRequestException({
                 message: '모임생성 중 오류가 발생했습니다.',
             });
