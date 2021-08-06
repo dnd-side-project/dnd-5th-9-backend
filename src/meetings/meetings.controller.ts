@@ -1,4 +1,3 @@
-import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import {
     Controller,
     Get,
@@ -6,14 +5,12 @@ import {
     Body,
     Param,
     Delete,
-    NotFoundException,
-    UnauthorizedException,
     Put,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
+import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
-import Users from '../entities/Users';
 
 @Controller('meetings')
 export class MeetingsController {
@@ -22,26 +19,6 @@ export class MeetingsController {
     @Post()
     create(@Body() createMeetingDto: CreateMeetingDto) {
         return this.meetingsService.create(createMeetingDto);
-    }
-
-    @Get('member/:meetingId')
-    async getMembers(@Param('meetingId') meetingId: number) {
-        const result = await this.meetingsService.getMembers(meetingId);
-        if (!result) throw new NotFoundException();
-        return result;
-    }
-
-    @Get('place/:meetingId')
-    getPlace(@Param('meetingId') meetingId: number) {
-        return this.meetingsService.getPlace(meetingId);
-    }
-
-    @Get('/:meetingId/:nickname')
-    checkOverlapNickname(
-        @Param('meetingId') meetingId: number,
-        @Param('nickname') nickname: string
-    ) {
-        return this.meetingsService.checkOverlapNickname(meetingId, nickname);
     }
 
     @Post('place')
@@ -54,12 +31,30 @@ export class MeetingsController {
         return this.meetingsService.findMeetingsList();
     }
 
-    @Put('/:meetingsId')
+    @Get(':meetingId/member')
+    async getMembers(@Param('meetingId') meetingId: number) {
+        return this.meetingsService.getMembers(meetingId);
+    }
+
+    @Get(':meetingId/place')
+    getPlace(@Param('meetingId') meetingId: number) {
+        return this.meetingsService.getPlace(meetingId);
+    }
+
+    @Get('/:meetingId/:nickname')
+    checkOverlapNickname(
+        @Param('meetingId') meetingId: number,
+        @Param('nickname') nickname: string
+    ) {
+        return this.meetingsService.checkOverlapNickname(meetingId, nickname);
+    }
+
+    @Put('/:meetingId')
     update(
-        @Param('meetingsId') meetingsId: number,
+        @Param('meetingId') meetingId: number,
         @Body() updateMeetingDto: UpdateMeetingDto
     ) {
-        return this.meetingsService.update(meetingsId, updateMeetingDto);
+        return this.meetingsService.update(meetingId, updateMeetingDto);
     }
 
     @Delete(':meetingId/member/:memberId')
@@ -67,8 +62,6 @@ export class MeetingsController {
         @Param('meetingId') meetingId: number,
         @Param('memberId') memberId: number
     ) {
-        const isAuth = this.meetingsService.isAuth(new Users(), meetingId); //TODO: 인가 기능 구현되면 실제 user 넣어야 함
-        if (!isAuth) throw new UnauthorizedException();
-        this.meetingsService.removeMember(memberId);
+        this.meetingsService.removeMember(meetingId, memberId);
     }
 }
