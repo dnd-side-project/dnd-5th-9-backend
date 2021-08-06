@@ -118,37 +118,6 @@ export class MeetingsService {
         }
     }
 
-    async getMembers(meetingId: number): Promise<MeetingMembers[] | undefined> {
-        try {
-            const meeting = await this.meetingsRepository
-                .createQueryBuilder('meetings')
-                .where('meetings.id =:meetingId', { meetingId })
-                .leftJoin('meetings.meetingMembers', 'member')
-                .addSelect(['member.id', 'member.nickname', 'member.auth'])
-                .getOne();
-            if (!meeting) return undefined;
-            return meeting.meetingMembers;
-        } catch (err) {
-            throw err;
-        }
-    }
-
-    async checkOverlapNickname(meetingId: number, nickname: string) {
-        const checkOverlap = await this.meetingMembersRepository
-            .createQueryBuilder()
-            .where('nickname=:nickname', { nickname: nickname })
-            .andWhere('meeting_id=:meetingId', { meetingId: meetingId })
-            .getCount();
-
-        return {
-            result: true,
-            code: 200,
-            data: {
-                checkOverlap: checkOverlap,
-            },
-        };
-    }
-
     async createPlace({
         memberId,
         latitude,
@@ -195,6 +164,47 @@ export class MeetingsService {
         };
     }
 
+    async getMembers(meetingId: number): Promise<MeetingMembers[] | undefined> {
+        try {
+            const meeting = await this.meetingsRepository
+                .createQueryBuilder('meetings')
+                .where('meetings.id =:meetingId', { meetingId })
+                .leftJoin('meetings.meetingMembers', 'member')
+                .addSelect(['member.id', 'member.nickname', 'member.auth'])
+                .getOne();
+            if (!meeting) return undefined;
+            return meeting.meetingMembers;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async getPlace(meetingId: number) {
+        const center = await this.getCenter(meetingId);
+        if (!center) return {};
+        const stations = await this.getStations(center);
+        return {
+            center,
+            stations,
+        };
+    }
+
+    async checkOverlapNickname(meetingId: number, nickname: string) {
+        const checkOverlap = await this.meetingMembersRepository
+            .createQueryBuilder()
+            .where('nickname=:nickname', { nickname: nickname })
+            .andWhere('meeting_id=:meetingId', { meetingId: meetingId })
+            .getCount();
+
+        return {
+            result: true,
+            code: 200,
+            data: {
+                checkOverlap: checkOverlap,
+            },
+        };
+    }
+
     // 유저 가드붙여서 유저 검증작업이 필요함.
     async update(meetingsId: number, updateMeetingDto: UpdateMeetingDto) {
         const meetings = await this.meetingsRepository.findOne({
@@ -230,19 +240,6 @@ export class MeetingsService {
         }
     }
 
-    async isAuth(user: Users, meetingId: number) {
-        try {
-            const member = await this.meetingMembersRepository
-                .createQueryBuilder()
-                .where('id =:meetingId', { meetingId })
-                .andWhere('user_id =:userId', { userId: user.id })
-                .getOne();
-            return member.auth;
-        } catch (err) {
-            throw err;
-        }
-    }
-
     async removeMember(memberId: number) {
         try {
             this.meetingMembersRepository
@@ -255,14 +252,17 @@ export class MeetingsService {
         }
     }
 
-    async getPlace(meetingId: number) {
-        const center = await this.getCenter(meetingId);
-        if (!center) return {};
-        const stations = await this.getStations(center);
-        return {
-            center,
-            stations,
-        };
+    async isAuth(user: Users, meetingId: number) {
+        try {
+            const member = await this.meetingMembersRepository
+                .createQueryBuilder()
+                .where('id =:meetingId', { meetingId })
+                .andWhere('user_id =:userId', { userId: user.id })
+                .getOne();
+            return member.auth;
+        } catch (err) {
+            throw err;
+        }
     }
 
     private async getCenter(meetingId: number): Promise<Point | false> {
