@@ -1,11 +1,13 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { uuid } from 'uuidv4';
+import * as geolib from 'geolib';
 import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
@@ -16,7 +18,7 @@ import MeetingSchedules from '../entities/MeetingSchedules';
 import Users from '../entities/Users';
 import UsersToMeetings from '../entities/UsersToMeetings';
 import Stations from '../entities/Stations';
-import * as geolib from 'geolib';
+import ResResult from '../lib/resResult';
 
 export interface Point {
     latitude: number;
@@ -41,7 +43,7 @@ export class MeetingsService {
         private stationsRepository: Repository<Stations>
     ) {}
 
-    async create(data: CreateMeetingDto) {
+    async create(data: CreateMeetingDto): Promise<ResResult> {
         let checkOverlap: number;
         let param = uuid();
 
@@ -99,7 +101,7 @@ export class MeetingsService {
             if (createMeeting) {
                 await queryRunner.commitTransaction();
                 return {
-                    result: true,
+                    status: true,
                     code: 200,
                     data: {
                         meetingInfo: createMeeting,
@@ -122,22 +124,34 @@ export class MeetingsService {
         memberId,
         latitude,
         longitude,
-    }: CreateMeetingPlaceDto): Promise<number | undefined> {
+    }: CreateMeetingPlaceDto): Promise<ResResult> {
         const meetingMember = await this.meetingMembersRepository.findOne(
             memberId
         );
-        if (!meetingMember) return undefined;
-        const result = await this.meetingPlacesRepository
-            .createQueryBuilder()
-            .insert()
-            .into(MeetingPlaces)
-            .values({ latitude, longitude, meetingMember })
-            .execute();
-        return result.raw.insertId;
+        if (!meetingMember) throw new NotFoundException();
+        try {
+            const result = await this.meetingPlacesRepository
+                .createQueryBuilder()
+                .insert()
+                .into(MeetingPlaces)
+                .values({ latitude, longitude, meetingMember })
+                .execute();
+            return {
+                status: true,
+                code: 201,
+                data: {
+                    id: result.raw.insertId,
+                },
+            };
+        } catch (err) {
+            throw new BadRequestException({
+                message: err,
+            });
+        }
     }
 
     // 회원전용,유저 가드 붙여서 수정해야함. 1번이라는 가정하에 제작
-    async findMeetingsList() {
+    async findMeetingsList(): Promise<ResResult> {
         const list = await this.meetingsRepository
             .createQueryBuilder('meetings')
             .innerJoinAndSelect('meetings.userToMeetings', 'userToMeetings')
@@ -156,7 +170,7 @@ export class MeetingsService {
             .getRawMany();
 
         return {
-            result: true,
+            status: true,
             code: 200,
             data: {
                 list: list,
@@ -164,7 +178,7 @@ export class MeetingsService {
         };
     }
 
-    async getMembers(meetingId: number): Promise<MeetingMembers[] | undefined> {
+    async getMembers(meetingId: number): Promise<ResResult> {
         try {
             const meeting = await this.meetingsRepository
                 .createQueryBuilder('meetings')
@@ -172,24 +186,47 @@ export class MeetingsService {
                 .leftJoin('meetings.meetingMembers', 'member')
                 .addSelect(['member.id', 'member.nickname', 'member.auth'])
                 .getOne();
-            if (!meeting) return undefined;
-            return meeting.meetingMembers;
+            if (!meeting) throw new NotFoundException();
+            return {
+                status: true,
+                code: 200,
+                data: {
+                    member: meeting.meetingMembers,
+                },
+            };
         } catch (err) {
-            throw err;
+            throw new BadRequestException({
+                message: err,
+            });
         }
     }
 
-    async getPlace(meetingId: number) {
+    async getPlace(meetingId: number): Promise<ResResult> {
         const center = await this.getCenter(meetingId);
-        if (!center) return {};
+        if (!center)
+            return {
+                status: true,
+                code: 200,
+                data: {
+                    center: null,
+                    stations: null,
+                },
+            };
         const stations = await this.getStations(center);
         return {
-            center,
-            stations,
+            status: true,
+            code: 200,
+            data: {
+                center,
+                stations,
+            },
         };
     }
 
-    async checkOverlapNickname(meetingId: number, nickname: string) {
+    async checkOverlapNickname(
+        meetingId: number,
+        nickname: string
+    ): Promise<ResResult> {
         const checkOverlap = await this.meetingMembersRepository
             .createQueryBuilder()
             .where('nickname=:nickname', { nickname: nickname })
@@ -197,7 +234,7 @@ export class MeetingsService {
             .getCount();
 
         return {
-            result: true,
+            status: true,
             code: 200,
             data: {
                 checkOverlap: checkOverlap,
@@ -206,12 +243,15 @@ export class MeetingsService {
     }
 
     // 유저 가드붙여서 유저 검증작업이 필요함.
-    async update(meetingsId: number, updateMeetingDto: UpdateMeetingDto) {
-        const meetings = await this.meetingsRepository.findOne({
-            where: { id: meetingsId },
+    async update(
+        meetingId: number,
+        updateMeetingDto: UpdateMeetingDto
+    ): Promise<ResResult> {
+        const meeting = await this.meetingsRepository.findOne({
+            where: { id: meetingId },
         });
 
-        if (!meetings) {
+        if (!meeting) {
             throw new UnauthorizedException('미팅정보가 존재하지 않습니다.');
         }
 
@@ -223,11 +263,11 @@ export class MeetingsService {
                     title: updateMeetingDto.title,
                     description: updateMeetingDto.description,
                 })
-                .where('id=:meetingsId', { meetingsId: 2 })
+                .where('id=:meetingId', { meetingId: 2 })
                 .execute();
 
             return {
-                result: true,
+                status: true,
                 code: 200,
                 data: {
                     message: '모임을 수정했습니다. ',
@@ -240,19 +280,28 @@ export class MeetingsService {
         }
     }
 
-    async removeMember(memberId: number) {
+    async removeMember(
+        meetingId: number,
+        memberId: number
+    ): Promise<ResResult> {
+        const isAuth = this.isAuth(new Users(), meetingId); //TODO: 인가 기능 구현되면 실제 user 넣어야 함
+        if (!isAuth) throw new UnauthorizedException();
         try {
             this.meetingMembersRepository
                 .createQueryBuilder()
                 .where('id=:memberId', { memberId })
                 .delete()
                 .execute();
+            return {
+                status: true,
+                code: 200,
+            };
         } catch (err) {
-            throw err;
+            throw new NotFoundException({ message: err });
         }
     }
 
-    async isAuth(user: Users, meetingId: number) {
+    private async isAuth(user: Users, meetingId: number) {
         try {
             const member = await this.meetingMembersRepository
                 .createQueryBuilder()
@@ -261,33 +310,24 @@ export class MeetingsService {
                 .getOne();
             return member.auth;
         } catch (err) {
-            throw err;
+            throw new UnauthorizedException({ message: err });
         }
     }
 
     private async getCenter(meetingId: number): Promise<Point | false> {
-        try {
-            const points = await this.meetingPlacesRepository
-                .createQueryBuilder('MeetingPlaces')
-                .leftJoin('MeetingPlaces.meetingMember', 'meetingMember')
-                .where('meetingMember.meeting_id =:meetingId', { meetingId })
-                .select(['MeetingPlaces.latitude', 'MeetingPlaces.longitude'])
-                .getMany();
-            return geolib.getCenter(points);
-        } catch (err) {
-            throw err;
-        }
+        const points = await this.meetingPlacesRepository
+            .createQueryBuilder('MeetingPlaces')
+            .leftJoin('MeetingPlaces.meetingMember', 'meetingMember')
+            .where('meetingMember.meeting_id =:meetingId', { meetingId })
+            .select(['MeetingPlaces.latitude', 'MeetingPlaces.longitude'])
+            .getMany();
+        return geolib.getCenter(points);
     }
 
     private async getStations(center: Point) {
-        try {
-            const stations: Point[] = await this.stationsRepository
-                .createQueryBuilder()
-                .getMany();
-            const distances = geolib.orderByDistance(center, stations);
-            return distances.slice(0, 5);
-        } catch (err) {
-            throw err;
-        }
+        const stations: Point[] = await this.stationsRepository
+            .createQueryBuilder()
+            .getMany();
+        return geolib.orderByDistance(center, stations).slice(0, 5);
     }
 }
