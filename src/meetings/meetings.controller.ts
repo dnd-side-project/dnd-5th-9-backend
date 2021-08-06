@@ -24,14 +24,24 @@ export class MeetingsController {
         return this.meetingsService.create(createMeetingDto);
     }
 
-    @Get('member/:meetingId')
+    @Post('place')
+    createPlace(@Body() createMeetingPlaceDto: CreateMeetingPlaceDto) {
+        return this.meetingsService.createPlace(createMeetingPlaceDto);
+    }
+
+    @Get('list')
+    findMeetingsList() {
+        return this.meetingsService.findMeetingsList();
+    }
+
+    @Get(':meetingId/member')
     async getMembers(@Param('meetingId') meetingId: number) {
         const result = await this.meetingsService.getMembers(meetingId);
         if (!result) throw new NotFoundException();
         return result;
     }
 
-    @Get('place/:meetingId')
+    @Get(':meetingId/place')
     getPlace(@Param('meetingId') meetingId: number) {
         return this.meetingsService.getPlace(meetingId);
     }
@@ -42,16 +52,6 @@ export class MeetingsController {
         @Param('nickname') nickname: string
     ) {
         return this.meetingsService.checkOverlapNickname(meetingId, nickname);
-    }
-
-    @Post('place')
-    createPlace(@Body() createMeetingPlaceDto: CreateMeetingPlaceDto) {
-        return this.meetingsService.createPlace(createMeetingPlaceDto);
-    }
-
-    @Get('list')
-    findMeetingsList() {
-        return this.meetingsService.findMeetingsList();
     }
 
     @Put('/:meetingsId')
