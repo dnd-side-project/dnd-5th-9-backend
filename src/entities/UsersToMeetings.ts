@@ -9,7 +9,7 @@ export default class UsersToMeetings extends BaseEntity {
     @JoinColumn({ name: 'user_id' })
     user: Users;
 
-    @ManyToOne(() => Meetings, (meetings) => meetings.userToMeetings)
+    @ManyToOne(() => Meetings, (meeting) => meeting.userToMeetings)
     @JoinColumn({ name: 'meeting_id' })
-    meetings: Meetings;
+    meeting: Meetings;
 }
