@@ -9,19 +9,24 @@ import {
     NotFoundException,
     UnauthorizedException,
     Put,
+    UseGuards,
+    Req,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import Users from '../entities/Users';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('meetings')
 export class MeetingsController {
     constructor(private readonly meetingsService: MeetingsService) {}
 
+    @UseGuards(OptionalJwtAuthGuard)
     @Post()
-    create(@Body() createMeetingDto: CreateMeetingDto) {
-        return this.meetingsService.create(createMeetingDto);
+    create(@Req() req, @Body() createMeetingDto: CreateMeetingDto) {
+        return this.meetingsService.create(req.user.id, createMeetingDto);
     }
 
     @Get('member/:meetingId')
@@ -49,9 +54,10 @@ export class MeetingsController {
         return this.meetingsService.createPlace(createMeetingPlaceDto);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('list')
-    findMeetingsList() {
-        return this.meetingsService.findMeetingsList();
+    findMeetingsList(@Req() req) {
+        return this.meetingsService.findMeetingsList(req.user.id);
     }
 
     @Put('/:meetingsId')

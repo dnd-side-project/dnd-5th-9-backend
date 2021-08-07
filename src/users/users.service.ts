@@ -103,16 +103,16 @@ export class UsersService {
         }
     }
 
-    async removeUser(id: number) {
+    async removeUser(userId: number) {
         const user = await this.usersRepository.findOne({
-            where: { id: id },
+            where: { id: userId },
         });
 
         if (!user) {
             throw new UnauthorizedException('회원정보가 존재하지 않습니다.');
         }
 
-        await this.usersRepository.delete({ id: id });
+        await this.usersRepository.delete({ id: userId });
 
         return {
             result: true,
