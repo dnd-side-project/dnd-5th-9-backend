@@ -67,6 +67,6 @@ export class MeetingsController {
         @Param('meetingId') meetingId: number,
         @Param('memberId') memberId: number
     ) {
-        this.meetingsService.removeMember(meetingId, memberId);
+        return this.meetingsService.removeMember(meetingId, memberId);
     }
 }
