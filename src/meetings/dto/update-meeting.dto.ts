@@ -1,4 +1,4 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdateMeetingDto {
@@ -13,7 +13,7 @@ export class UpdateMeetingDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
-        example: '오구오구 6주차 수정입니다.  ',
+        example: '오구오구 6주차 수정입니다. ',
         description: '설명',
     })
     public description: string;
