@@ -10,8 +10,9 @@ import {
     Req,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
-import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
+import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
+import { CreateMeetingMemberDto } from './dto/create-meeting-member.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -33,6 +34,21 @@ export class MeetingsController {
     @Post('place')
     createPlace(@Body() createMeetingPlaceDto: CreateMeetingPlaceDto) {
         return this.meetingsService.createPlace(createMeetingPlaceDto);
+    }
+
+    @ApiOperation({ summary: '미팅멤버추가' })
+    @UseGuards(JwtAuthGuard)
+    @Post(':meetingId/member')
+    async createMember(
+        @Req() req,
+        @Param('meetingId') meetingId: number,
+        @Body() createMeetingMemberDto: CreateMeetingMemberDto
+    ) {
+        return this.meetingsService.createMember(
+            meetingId,
+            req.user.id,
+            createMeetingMemberDto
+        );
     }
 
     @ApiBearerAuth()
