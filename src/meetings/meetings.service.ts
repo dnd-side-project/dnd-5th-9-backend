@@ -8,8 +8,9 @@ import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { uuid } from 'uuidv4';
 import * as geolib from 'geolib';
-import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
+import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
+import { CreateMeetingMemberDto } from './dto/create-meeting-member.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
 import MeetingPlaces from '../entities/MeetingPlaces';
 import MeetingMembers from '../entities/MeetingMembers';
@@ -37,6 +38,8 @@ export class MeetingsService {
         private meetingsRepository: Repository<Meetings>,
         @InjectRepository(MeetingSchedules)
         private meetingSchedulesRepository: Repository<MeetingSchedules>,
+        @InjectRepository(Users)
+        private usersRepository: Repository<Users>,
         @InjectRepository(UsersToMeetings)
         private usersToMeetingsRepository: Repository<UsersToMeetings>,
         @InjectRepository(Stations)
@@ -86,12 +89,12 @@ export class MeetingsService {
                 users.id = userId;
                 meetingMembers.user = users;
                 usersToMeetings.user = users;
-                usersToMeetings.meetings = createMeeting;
+                usersToMeetings.meeting = createMeeting;
                 await this.usersToMeetingsRepository.save(usersToMeetings);
             }
 
-            meetingMembers.meetings = createMeeting;
-            meetingSchedules.meetings = createMeeting;
+            meetingMembers.meeting = createMeeting;
+            meetingSchedules.meeting = createMeeting;
 
             await this.meetingMembersRepository.save(meetingMembers);
             await this.meetingSchedulesRepository.save(meetingSchedules);
@@ -139,6 +142,45 @@ export class MeetingsService {
                 code: 201,
                 data: {
                     id: result.raw.insertId,
+                },
+            };
+        } catch (err) {
+            throw new BadRequestException({
+                message: err,
+            });
+        }
+    }
+
+    async createMember(
+        meetingId: number,
+        userId: number,
+        { nickname }: CreateMeetingMemberDto
+    ): Promise<ResResult> {
+        const meeting = await this.meetingsRepository.findOne({
+            id: meetingId,
+        });
+        if (!meeting) throw new NotFoundException();
+        let user = null;
+        if (userId) {
+            user = await this.usersRepository.findOne({ id: userId });
+        }
+        try {
+            const member = await this.meetingMembersRepository
+                .createQueryBuilder()
+                .insert()
+                .into(MeetingMembers)
+                .values({
+                    nickname,
+                    auth: false,
+                    meeting,
+                    user,
+                })
+                .execute();
+            return {
+                status: true,
+                code: 201,
+                data: {
+                    id: member.raw.insertId,
                 },
             };
         } catch (err) {

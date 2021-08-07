@@ -5,6 +5,7 @@ import {
     OneToMany,
     JoinColumn,
     OneToOne,
+    Index,
 } from 'typeorm';
 import BaseEntity from './BaseEntity';
 import Users from './Users';
@@ -15,6 +16,7 @@ import MeetingPlaces from './MeetingPlaces';
 @Entity({ name: 'meeting_members' })
 export default class MeetingMembers extends BaseEntity {
     @Column()
+    @Index({ unique: true })
     nickname!: string;
 
     @Column()
@@ -29,9 +31,9 @@ export default class MeetingMembers extends BaseEntity {
     )
     meetingMemberSchedules: MeetingMemberSchedules[] | undefined;
 
-    @ManyToOne(() => Meetings, (meetings) => meetings.meetingMembers)
+    @ManyToOne(() => Meetings, (meeting) => meeting.meetingMembers)
     @JoinColumn({ name: 'meeting_id' })
-    meetings!: Meetings;
+    meeting!: Meetings;
 
     @ManyToOne(() => Users, (user) => user.meetingMembers, {
         onDelete: 'NO ACTION',

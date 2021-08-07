@@ -24,7 +24,7 @@ export default class Meetings extends BaseEntity {
     )
     meetingSchedule: MeetingSchedules | undefined;
 
-    @OneToMany(() => MeetingMembers, (meetingMember) => meetingMember.meetings)
+    @OneToMany(() => MeetingMembers, (meetingMember) => meetingMember.meeting)
     meetingMembers: MeetingMembers[] | undefined;
 
     @OneToMany(() => UsersToMeetings, (userToMeeting) => userToMeeting.meetings)

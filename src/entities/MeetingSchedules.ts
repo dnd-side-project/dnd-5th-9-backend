@@ -10,7 +10,7 @@ export default class MeetingSchedules extends BaseEntity {
     @Column({ name: 'end_date' })
     endDate!: Date;
 
-    @OneToOne(() => Meetings, (meetings) => meetings.meetingSchedule)
+    @OneToOne(() => Meetings, (meeting) => meeting.meetingSchedule)
     @JoinColumn({ name: 'meeting_id' })
-    meetings!: Meetings;
+    meeting!: Meetings;
 }
