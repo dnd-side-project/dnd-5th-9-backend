@@ -6,19 +6,23 @@ import {
     Param,
     Delete,
     Put,
+    UseGuards,
+    Req,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
 import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('meetings')
 export class MeetingsController {
     constructor(private readonly meetingsService: MeetingsService) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post()
-    create(@Body() createMeetingDto: CreateMeetingDto) {
-        return this.meetingsService.create(createMeetingDto);
+    create(@Req() req, @Body() createMeetingDto: CreateMeetingDto) {
+        return this.meetingsService.create(req.user.id, createMeetingDto);
     }
 
     @Post('place')
@@ -26,9 +30,10 @@ export class MeetingsController {
         return this.meetingsService.createPlace(createMeetingPlaceDto);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('list')
-    findMeetingsList() {
-        return this.meetingsService.findMeetingsList();
+    findMeetingsList(@Req() req) {
+        return this.meetingsService.findMeetingsList(req.user.id);
     }
 
     @Get(':meetingId/member')

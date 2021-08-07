@@ -43,7 +43,7 @@ export class MeetingsService {
         private stationsRepository: Repository<Stations>
     ) {}
 
-    async create(data: CreateMeetingDto): Promise<ResResult> {
+    async create(userId: number, data: CreateMeetingDto): Promise<ResResult> {
         let checkOverlap: number;
         let param = uuid();
 
@@ -80,9 +80,7 @@ export class MeetingsService {
             meetingSchedules.startDate = new Date(data.startDate);
             meetingSchedules.endDate = new Date(data.endDate);
 
-            // 가드 설정 안함. 회원 1번일때를 가정하고 제작
-            const userId = 1;
-            if (userId == 1) {
+            if (userId) {
                 const users = new Users();
                 const usersToMeetings = new UsersToMeetings();
                 users.id = userId;
@@ -150,17 +148,16 @@ export class MeetingsService {
         }
     }
 
-    // 회원전용,유저 가드 붙여서 수정해야함. 1번이라는 가정하에 제작
-    async findMeetingsList(): Promise<ResResult> {
+    async findMeetingsList(userId: number): Promise<ResResult> {
         const list = await this.meetingsRepository
             .createQueryBuilder('meetings')
             .innerJoinAndSelect('meetings.userToMeetings', 'userToMeetings')
             .innerJoinAndSelect('userToMeetings.user', 'user')
             .innerJoinAndSelect('meetings.meetingMembers', 'meetingMembers')
-            .where('user.id = :user_id', { user_id: 1 })
+            .where('user.id = :userId', { userId: userId })
             .select([
                 'meetings.id as id',
-                'meetings.title as titls',
+                'meetings.title as title',
                 'meetings.param as param',
                 'meetings.description as description',
                 'meetings.placeYn as place_yn',
