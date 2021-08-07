@@ -13,7 +13,7 @@ export class LoginDto {
     @IsString()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'password',
+        example: 'test',
         description: '비밀번호',
     })
     public password: string;
