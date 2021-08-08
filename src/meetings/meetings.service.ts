@@ -217,6 +217,19 @@ export class MeetingsService {
         };
     }
 
+    async getSchedules(meetingId: number): Promise<ResResult> {
+        const schedules = await this.meetingSchedulesRepository
+            .createQueryBuilder('meetingSchedules')
+            .leftJoin('meetingSchedules.meeting', 'meeting')
+            .where('meeting.id =:meetingId', { meetingId })
+            .getMany();
+        return {
+            status: true,
+            code: 200,
+            data: { schedules },
+        };
+    }
+
     async getMembers(meetingId: number): Promise<ResResult> {
         try {
             const meeting = await this.meetingsRepository
