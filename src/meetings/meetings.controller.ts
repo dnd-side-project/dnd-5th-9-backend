@@ -39,7 +39,7 @@ export class MeetingsController {
     @ApiOperation({ summary: '미팅멤버추가' })
     @UseGuards(JwtAuthGuard)
     @Post(':meetingId/member')
-    async createMember(
+    createMember(
         @Req() req,
         @Param('meetingId') meetingId: number,
         @Body() createMeetingMemberDto: CreateMeetingMemberDto
@@ -59,9 +59,15 @@ export class MeetingsController {
         return this.meetingsService.findMeetingsList(req.user.id);
     }
 
+    @ApiOperation({ summary: '모임 스케줄 보기 ' })
+    @Get(':meetingId/schedule')
+    getSchedules(@Param('meetingId') meetingId: number) {
+        return this.meetingsService.getSchedules(meetingId);
+    }
+
     @ApiOperation({ summary: '' })
     @Get(':meetingId/member')
-    async getMembers(@Param('meetingId') meetingId: number) {
+    getMembers(@Param('meetingId') meetingId: number) {
         return this.meetingsService.getMembers(meetingId);
     }
 
