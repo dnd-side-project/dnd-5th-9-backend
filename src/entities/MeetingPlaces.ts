@@ -12,7 +12,8 @@ export default class MeetingPlaces extends BaseEntity {
 
     @OneToOne(
         () => MeetingMembers,
-        (meetingMember) => meetingMember.meetingPlace
+        (meetingMember) => meetingMember.meetingPlace,
+        { onDelete: 'CASCADE' }
     )
     @JoinColumn({ name: 'meeting_member_id' })
     meetingMember!: MeetingMembers;

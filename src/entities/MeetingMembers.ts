@@ -16,7 +16,6 @@ import MeetingPlaces from './MeetingPlaces';
 @Entity({ name: 'meeting_members' })
 export default class MeetingMembers extends BaseEntity {
     @Column()
-    @Index({ unique: true })
     nickname!: string;
 
     @Column()
@@ -36,7 +35,7 @@ export default class MeetingMembers extends BaseEntity {
     meeting!: Meetings;
 
     @ManyToOne(() => Users, (user) => user.meetingMembers, {
-        onDelete: 'NO ACTION',
+        onDelete: 'SET NULL',
     })
     @JoinColumn({ name: 'user_id' })
     user!: Users;
