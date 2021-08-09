@@ -78,7 +78,7 @@ export class MeetingsController {
     }
 
     @ApiOperation({ summary: '미팅내 닉네임 중복 체크' })
-    @Get('/:meetingId/:nickname')
+    @Get(':meetingId/:nickname')
     checkOverlapNickname(
         @Param('meetingId') meetingId: number,
         @Param('nickname') nickname: string
@@ -87,7 +87,7 @@ export class MeetingsController {
     }
 
     @ApiOperation({ summary: '' })
-    @Put('/:meetingId')
+    @Put(':meetingId')
     update(
         @Param('meetingId') meetingId: number,
         @Body() updateMeetingDto: UpdateMeetingDto
