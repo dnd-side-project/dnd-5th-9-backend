@@ -1,24 +1,14 @@
 import {
     Controller,
-    Get,
     Post,
     Body,
-    Patch,
-    Param,
     Delete,
-    NotFoundException,
     Put,
     UseGuards,
     Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import {
-    ApiBearerAuth,
-    ApiBody,
-    ApiOperation,
-    ApiParam,
-    ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CheckUserDto } from './dto/check-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -32,38 +22,37 @@ export class UsersController {
 
     @ApiOperation({ summary: '회원가입' })
     @ApiBody({ type: CreateUserDto })
-    @Post('/join')
-    async create(@Body() createUserDto: CreateUserDto) {
-        return await this.usersService.create(createUserDto);
+    @Post('join')
+    create(@Body() createUserDto: CreateUserDto) {
+        return this.usersService.create(createUserDto);
     }
 
     @ApiOperation({ summary: '로그인' })
-    @Post('/login')
-    async login(@Body() loginDto: LoginDto) {
-        return await this.usersService.login(loginDto);
+    @ApiBody({ type: LoginDto })
+    @Post('login')
+    login(@Body() loginDto: LoginDto) {
+        return this.usersService.login(loginDto);
     }
 
     @ApiBearerAuth()
     @ApiOperation({ summary: '회원탈퇴' })
     @UseGuards(JwtAuthGuard)
-    @Delete('')
-    async removeUser(@Req() req) {
-        return await this.usersService.removeUser(req.user.id);
+    @Delete()
+    removeUser(@Req() req) {
+        return this.usersService.removeUser(req.user.id);
     }
 
-    @ApiOperation({ summary: '' })
+    @ApiOperation({ summary: '비밀번호 재설정 메일 발송' })
+    @ApiBody({ type: CheckUserDto })
     @Post('check')
-    async checkUser(@Body() checkUserDto: CheckUserDto) {
-        const result = await this.usersService.check(checkUserDto);
-        if (!result) throw new NotFoundException();
+    checkUser(@Body() checkUserDto: CheckUserDto) {
+        return this.usersService.check(checkUserDto);
     }
 
-    @ApiOperation({ summary: '' })
+    @ApiOperation({ summary: '비밀번호 변경' })
+    @ApiBody({ type: UpdatePasswordDto })
     @Put('password')
-    async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
-        const result = await this.usersService.updatePassword(
-            updatePasswordDto
-        );
-        if (!result) throw new NotFoundException();
+    updatePassword(@Body() updatePasswordDto: UpdatePasswordDto) {
+        return this.usersService.updatePassword(updatePasswordDto);
     }
 }

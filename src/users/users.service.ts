@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -13,6 +14,7 @@ import Users from '../entities/Users';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import ResResult from 'src/lib/resResult';
 
 @Injectable()
 export class UsersService {
@@ -68,64 +70,62 @@ export class UsersService {
         };
     }
 
-    async login(data: LoginDto) {
+    async login(data: LoginDto): Promise<ResResult> {
         const user = await this.usersRepository.findOne({
             where: { email: data.email },
             select: ['id', 'email', 'name', 'password'],
         });
-
         if (!user) {
-            throw new UnauthorizedException('회원정보가 존재하지 않습니다.');
+            throw new UnauthorizedException('잘못된 회원 정보입니다.');
         }
 
         const result = await bcrypt.compare(data.password, user.password);
+        if (!result) throw new UnauthorizedException('잘못된 회원 정보입니다.');
 
-        if (result) {
-            const token = await this.getAccessToken(user);
-            await this.usersRepository
-                .createQueryBuilder('user')
-                .update()
-                .set({ token: token });
+        const token = await this.getAccessToken(user);
+        await this.usersRepository
+            .createQueryBuilder('user')
+            .update()
+            .set({ token: token });
 
-            user.token = token;
+        user.token = token;
 
-            const { password, ...userWithoutPassword } = user;
-            return {
-                result: true,
-                code: 200,
-                data: {
-                    info: userWithoutPassword,
-                    message: '로그인 성공했습니다.',
-                },
-            };
-        } else {
-            throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
-        }
-    }
-
-    async removeUser(userId: number) {
-        const user = await this.usersRepository.findOne({
-            where: { id: userId },
-        });
-
-        if (!user) {
-            throw new UnauthorizedException('회원정보가 존재하지 않습니다.');
-        }
-
-        await this.usersRepository.delete({ id: userId });
-
+        const { password, ...userWithoutPassword } = user;
         return {
-            result: true,
+            status: true,
             code: 200,
             data: {
-                message: '정상적으로 탈퇴되었습니다. ',
+                info: userWithoutPassword,
+                message: '로그인 성공했습니다.',
             },
         };
     }
 
-    async check({ email }: CheckUserDto): Promise<boolean> {
+    async removeUser(userId: number): Promise<ResResult> {
+        const user = await this.usersRepository.findOne({
+            where: { id: userId },
+        });
+        if (!user) {
+            throw new UnauthorizedException('회원정보가 존재하지 않습니다.');
+        }
+        try {
+            await this.usersRepository.delete({ id: userId });
+            return {
+                status: true,
+                code: 200,
+                data: {
+                    message: '정상적으로 탈퇴되었습니다.',
+                },
+            };
+        } catch (err) {
+            throw new BadRequestException();
+        }
+    }
+
+    async check({ email }: CheckUserDto): Promise<ResResult> {
         const user = await this.usersRepository.findOne({ email });
-        if (!user) return false;
+        if (!user) throw new NotFoundException();
+
         const title = '[moida] 비밀번호 변경 안내 메일';
         const content = `
         안녕하세요. 당신을 위한 모임 도우미, 𝗺𝗼𝗶𝗱𝗮입니다.
@@ -139,16 +139,34 @@ export class UsersService {
             title,
             content,
         });
-        return true;
+        return {
+            status: true,
+            code: 201,
+            data: {
+                message: '비밀번호 변경 메일이 발송되었습니다.',
+            },
+        };
     }
 
     async updatePassword({
         token,
         password,
-    }: UpdatePasswordDto): Promise<boolean> {
+    }: UpdatePasswordDto): Promise<ResResult> {
         const user = await this.usersRepository.findOne({ token });
-        if (!user) return false;
-        await this.usersRepository.update({ token }, { password });
-        return true;
+        if (!user) throw new NotFoundException();
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        await this.usersRepository.update(
+            { token },
+            { password: hashedPassword }
+        );
+        return {
+            status: true,
+            code: 200,
+            data: {
+                message: '비밀번호가 성공적으로 변경되었습니다.',
+            },
+        };
     }
 }

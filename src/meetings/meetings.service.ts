@@ -115,7 +115,6 @@ export class MeetingsService {
                 };
             }
         } catch (err) {
-            console.log(err);
             await queryRunner.rollbackTransaction();
             throw new BadRequestException({
                 message: '모임생성 중 오류가 발생했습니다.',
@@ -160,6 +159,10 @@ export class MeetingsService {
         userId: number,
         { nickname }: CreateMeetingMemberDto
     ): Promise<ResResult> {
+        const result = await this.isExistNickname(meetingId, nickname);
+        if (result)
+            throw new BadRequestException('이미 존재하는 닉네임입니다.');
+
         const meeting = await this.meetingsRepository.findOne({
             id: meetingId,
         });
@@ -194,20 +197,19 @@ export class MeetingsService {
         }
     }
 
-    async findMeetingsList(userId: number): Promise<ResResult> {
-        const list = await this.meetingsRepository
-            .createQueryBuilder('meetings')
-            .innerJoinAndSelect('meetings.userToMeetings', 'userToMeetings')
-            .innerJoinAndSelect('userToMeetings.user', 'user')
-            .innerJoinAndSelect('meetings.meetingMembers', 'meetingMembers')
-            .where('user.id = :userId', { userId: userId })
+    async getMeetings(userId: number): Promise<ResResult> {
+        const meetings = await this.meetingMembersRepository
+            .createQueryBuilder('meetingMembers')
+            .innerJoin('meetingMembers.meeting', 'meeting')
+            .innerJoin('meetingMembers.user', 'user')
+            .where('user.id =:userId', { userId })
             .select([
-                'meetings.id as id',
-                'meetings.title as title',
-                'meetings.param as param',
-                'meetings.description as description',
-                'meetings.placeYn as place_yn',
-                'date_format(userToMeetings.createdAt, "%Y-%m-%d %h:%i:%s") as created_at',
+                'meeting.id as id',
+                'meeting.title as title',
+                'meeting.param as param',
+                'meeting.description as description',
+                'meeting.placeYn as place_yn',
+                'meeting.createdAt as created_at',
                 'meetingMembers.auth as auth',
             ])
             .getRawMany();
@@ -216,7 +218,7 @@ export class MeetingsService {
             status: true,
             code: 200,
             data: {
-                list: list,
+                meetings,
             },
         };
     }
@@ -287,12 +289,7 @@ export class MeetingsService {
         meetingId: number,
         nickname: string
     ): Promise<ResResult> {
-        const checkOverlap = await this.meetingMembersRepository
-            .createQueryBuilder()
-            .where('nickname=:nickname', { nickname: nickname })
-            .andWhere('meeting_id=:meetingId', { meetingId: meetingId })
-            .getCount();
-
+        const checkOverlap = await this.isExistNickname(meetingId, nickname);
         return {
             status: true,
             code: 200,
@@ -302,18 +299,29 @@ export class MeetingsService {
         };
     }
 
-    // 유저 가드붙여서 유저 검증작업이 필요함.
+    private async isExistNickname(meetingId: number, nickname: string) {
+        const member = await this.meetingMembersRepository
+            .createQueryBuilder()
+            .where('nickname=:nickname', { nickname: nickname })
+            .andWhere('meeting_id=:meetingId', { meetingId: meetingId })
+            .getOne();
+        if (member) return true;
+        return false;
+    }
+
     async update(
         meetingId: number,
+        userId: number,
         updateMeetingDto: UpdateMeetingDto
     ): Promise<ResResult> {
+        const isAuth = await this.isAuth(userId, meetingId);
+        if (!isAuth) throw new UnauthorizedException('팀장이 아닙니다.');
+
         const meeting = await this.meetingsRepository.findOne({
             where: { id: meetingId },
         });
-
-        if (!meeting) {
+        if (!meeting)
             throw new UnauthorizedException('미팅정보가 존재하지 않습니다.');
-        }
 
         try {
             await this.meetingsRepository
@@ -323,7 +331,7 @@ export class MeetingsService {
                     title: updateMeetingDto.title,
                     description: updateMeetingDto.description,
                 })
-                .where('id=:meetingId', { meetingId: 2 })
+                .where('id=:meetingId', { meetingId })
                 .execute();
 
             return {
@@ -335,7 +343,7 @@ export class MeetingsService {
             };
         } catch (err) {
             throw new BadRequestException({
-                message: '모임수정 중 오류가 발생했습니다.',
+                message: '모임 수정 중 오류가 발생했습니다.',
             });
         }
     }
@@ -392,16 +400,14 @@ export class MeetingsService {
 
     async removeMember(
         meetingId: number,
+        userId: number,
         memberId: number
     ): Promise<ResResult> {
-        const isAuth = this.isAuth(new Users(), meetingId); //TODO: 인가 기능 구현되면 실제 user 넣어야 함
-        if (!isAuth) throw new UnauthorizedException();
+        const isAuth = await this.isAuth(userId, meetingId);
+        if (!isAuth) throw new UnauthorizedException('팀장이 아닙니다.');
+
         try {
-            this.meetingMembersRepository
-                .createQueryBuilder()
-                .where('id=:memberId', { memberId })
-                .delete()
-                .execute();
+            this.meetingMembersRepository.delete({ id: memberId });
             return {
                 status: true,
                 code: 200,
@@ -411,7 +417,10 @@ export class MeetingsService {
         }
     }
 
-    private async isAuth(user: Users, meetingId: number) {
+    private async isAuth(userId: number, meetingId: number) {
+        const user = await this.usersRepository.findOne({ id: userId });
+        if (!user) throw new NotFoundException();
+
         try {
             const member = await this.meetingMembersRepository
                 .createQueryBuilder()

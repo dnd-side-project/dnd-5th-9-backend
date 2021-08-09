@@ -7,12 +7,12 @@ export class AppController {
     constructor(private readonly appService: AppService) {}
 
     @Get()
-    getHello(): string {
+    getHello() {
         return this.appService.getHello();
     }
 
     @Post('qna')
     sendQna(@Body() mailDto: MailDto) {
-        this.appService.sendQna(mailDto);
+        return this.appService.sendQna(mailDto);
     }
 }

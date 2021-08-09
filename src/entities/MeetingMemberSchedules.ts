@@ -13,7 +13,7 @@ export default class MeetingMemberSchedules extends BaseEntity {
     @ManyToOne(
         () => MeetingMember,
         (meetingMember) => meetingMember.meetingMemberSchedules,
-        { onDelete: 'SET NULL' }
+        { onDelete: 'CASCADE' }
     )
     @JoinColumn({ name: 'meeting_member_id' })
     meetingMember!: MeetingMember;

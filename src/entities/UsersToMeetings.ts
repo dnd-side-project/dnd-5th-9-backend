@@ -5,7 +5,9 @@ import Users from './Users';
 
 @Entity({ name: 'users_to_meetings' })
 export default class UsersToMeetings extends BaseEntity {
-    @ManyToOne(() => Users, (user) => user.userToMeetings)
+    @ManyToOne(() => Users, (user) => user.userToMeetings, {
+        onDelete: 'SET NULL',
+    })
     @JoinColumn({ name: 'user_id' })
     user: Users;
 
