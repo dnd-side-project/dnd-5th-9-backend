@@ -78,7 +78,7 @@ export class MeetingsController {
     }
 
     @ApiOperation({ summary: '미팅내 닉네임 중복 체크' })
-    @Get('/:meetingId/:nickname')
+    @Get(':meetingId/:nickname')
     checkOverlapNickname(
         @Param('meetingId') meetingId: number,
         @Param('nickname') nickname: string
@@ -87,12 +87,27 @@ export class MeetingsController {
     }
 
     @ApiOperation({ summary: '' })
-    @Put('/:meetingId')
+    @Put(':meetingId')
     update(
         @Param('meetingId') meetingId: number,
         @Body() updateMeetingDto: UpdateMeetingDto
     ) {
         return this.meetingsService.update(meetingId, updateMeetingDto);
+    }
+
+    @ApiOperation({ summary: '미팅 스케줄 수정' })
+    @UseGuards(JwtAuthGuard)
+    @Put('schedule/:memberId')
+    updateSchedule(
+        @Req() req,
+        @Param('memberId') memberId: number,
+        @Body() updateMeetingScheduleDto
+    ) {
+        return this.meetingsService.updateSchedule(
+            memberId,
+            req.user.id,
+            updateMeetingScheduleDto
+        );
     }
 
     @ApiOperation({ summary: '' })

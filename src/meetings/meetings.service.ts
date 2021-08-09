@@ -12,10 +12,12 @@ import { CreateMeetingDto } from './dto/create-meeting.dto';
 import { CreateMeetingPlaceDto } from './dto/create-meeting-place.dto';
 import { CreateMeetingMemberDto } from './dto/create-meeting-member.dto';
 import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { UpdateMeetingScheduleDto } from './dto/update-meeting-schedule.dto';
 import MeetingPlaces from '../entities/MeetingPlaces';
 import MeetingMembers from '../entities/MeetingMembers';
 import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
+import MeetingMemberSchedules from '../entities/MeetingMemberSchedules';
 import Users from '../entities/Users';
 import UsersToMeetings from '../entities/UsersToMeetings';
 import Stations from '../entities/Stations';
@@ -38,6 +40,8 @@ export class MeetingsService {
         private meetingsRepository: Repository<Meetings>,
         @InjectRepository(MeetingSchedules)
         private meetingSchedulesRepository: Repository<MeetingSchedules>,
+        @InjectRepository(MeetingMemberSchedules)
+        private meetingMemberSchedulesRepository: Repository<MeetingMemberSchedules>,
         @InjectRepository(Users)
         private usersRepository: Repository<Users>,
         @InjectRepository(UsersToMeetings)
@@ -80,8 +84,8 @@ export class MeetingsService {
             meetingMembers.auth = true;
 
             const meetingSchedules = new MeetingSchedules();
-            meetingSchedules.startDate = new Date(data.startDate);
-            meetingSchedules.endDate = new Date(data.endDate);
+            meetingSchedules.startDate = data.startDate;
+            meetingSchedules.endDate = data.endDate;
 
             if (userId) {
                 const users = new Users();
@@ -106,7 +110,7 @@ export class MeetingsService {
                     code: 200,
                     data: {
                         meetingInfo: createMeeting,
-                        message: '모임을 생성했습니다. ',
+                        message: '모임을 생성했습니다.',
                     },
                 };
             }
@@ -217,16 +221,20 @@ export class MeetingsService {
         };
     }
 
-    async getSchedules(meetingId: number): Promise<ResResult> {
-        const schedules = await this.meetingSchedulesRepository
-            .createQueryBuilder('meetingSchedules')
-            .leftJoin('meetingSchedules.meeting', 'meeting')
+    async getSchedules(meetingId: number) {
+        const members = await this.meetingMembersRepository
+            .createQueryBuilder('meetingMembers')
+            .innerJoin('meetingMembers.meeting', 'meeting')
+            .innerJoinAndSelect(
+                'meetingMembers.meetingMemberSchedules',
+                'meetingMemberSchedules'
+            )
             .where('meeting.id =:meetingId', { meetingId })
             .getMany();
         return {
             status: true,
             code: 200,
-            data: { schedules },
+            data: { members },
         };
     }
 
@@ -330,6 +338,56 @@ export class MeetingsService {
                 message: '모임수정 중 오류가 발생했습니다.',
             });
         }
+    }
+
+    async updateSchedule(
+        memberId: number,
+        userId: number,
+        { schedules }: UpdateMeetingScheduleDto
+    ): Promise<ResResult> {
+        const member = await this.meetingMembersRepository.findOne({
+            where: { id: memberId },
+            relations: ['user'],
+        });
+        if (member.user && member.user.id !== userId)
+            throw new UnauthorizedException();
+
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            await this.meetingMemberSchedulesRepository
+                .createQueryBuilder('meetingMemberSchedules')
+                .innerJoin('meetingMemberSchedules.meetingMember', 'member')
+                .where('member.id =:memberId', { memberId })
+                .getMany()
+                .then((schedules) =>
+                    this.meetingMemberSchedulesRepository.remove(schedules)
+                );
+            schedules.forEach(async (schedule) => {
+                await this.meetingSchedulesRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(MeetingMemberSchedules)
+                    .values({
+                        ...schedule,
+                        meetingMember: member,
+                    })
+                    .execute();
+            });
+            queryRunner.commitTransaction();
+        } catch (err) {
+            queryRunner.rollbackTransaction();
+            throw new BadRequestException({
+                message: '모임 스케줄 등록 중 오류가 발생했습니다.',
+            });
+        } finally {
+            queryRunner.release();
+        }
+        return {
+            status: true,
+            code: 200,
+        };
     }
 
     async removeMember(
