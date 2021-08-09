@@ -110,7 +110,7 @@ export class MeetingsService {
                     code: 200,
                     data: {
                         meetingInfo: createMeeting,
-                        message: '모임을 생성했습니다. ',
+                        message: '모임을 생성했습니다.',
                     },
                 };
             }
@@ -338,6 +338,56 @@ export class MeetingsService {
                 message: '모임수정 중 오류가 발생했습니다.',
             });
         }
+    }
+
+    async updateSchedule(
+        memberId: number,
+        userId: number,
+        { schedules }: UpdateMeetingScheduleDto
+    ): Promise<ResResult> {
+        const member = await this.meetingMembersRepository.findOne({
+            where: { id: memberId },
+            relations: ['user'],
+        });
+        if (member.user && member.user.id !== userId)
+            throw new UnauthorizedException();
+
+        const queryRunner = this.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            await this.meetingMemberSchedulesRepository
+                .createQueryBuilder('meetingMemberSchedules')
+                .innerJoin('meetingMemberSchedules.meetingMember', 'member')
+                .where('member.id =:memberId', { memberId })
+                .getMany()
+                .then((schedules) =>
+                    this.meetingMemberSchedulesRepository.remove(schedules)
+                );
+            schedules.forEach(async (schedule) => {
+                await this.meetingSchedulesRepository
+                    .createQueryBuilder()
+                    .insert()
+                    .into(MeetingMemberSchedules)
+                    .values({
+                        ...schedule,
+                        meetingMember: member,
+                    })
+                    .execute();
+            });
+            queryRunner.commitTransaction();
+        } catch (err) {
+            queryRunner.rollbackTransaction();
+            throw new BadRequestException({
+                message: '모임 스케줄 등록 중 오류가 발생했습니다.',
+            });
+        } finally {
+            queryRunner.release();
+        }
+        return {
+            status: true,
+            code: 200,
+        };
     }
 
     async removeMember(

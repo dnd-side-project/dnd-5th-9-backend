@@ -95,6 +95,21 @@ export class MeetingsController {
         return this.meetingsService.update(meetingId, updateMeetingDto);
     }
 
+    @ApiOperation({ summary: '미팅 스케줄 수정' })
+    @UseGuards(JwtAuthGuard)
+    @Put('schedule/:memberId')
+    updateSchedule(
+        @Req() req,
+        @Param('memberId') memberId: number,
+        @Body() updateMeetingScheduleDto
+    ) {
+        return this.meetingsService.updateSchedule(
+            memberId,
+            req.user.id,
+            updateMeetingScheduleDto
+        );
+    }
+
     @ApiOperation({ summary: '' })
     @Delete(':meetingId/member/:memberId')
     removeMember(
