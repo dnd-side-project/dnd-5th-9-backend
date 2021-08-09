@@ -5,10 +5,10 @@ import Meetings from './Meetings';
 @Entity({ name: 'meeting_schedules' })
 export default class MeetingSchedules extends BaseEntity {
     @Column({ name: 'start_date' })
-    startDate!: Date;
+    startDate!: number;
 
     @Column({ name: 'end_date' })
-    endDate!: Date;
+    endDate!: number;
 
     @OneToOne(() => Meetings, (meeting) => meeting.meetingSchedule)
     @JoinColumn({ name: 'meeting_id' })
