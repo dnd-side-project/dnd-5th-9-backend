@@ -14,7 +14,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: rebuild docker container
       - run: |
           aws s3 cd /home/node/back
           aws s3 git pull origin develop
