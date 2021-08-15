@@ -8,19 +8,20 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-deploy:
-    needs: build
-    name: Deploy
-    runs-on: [ self-hosted, label-development ]
+  deploy:
+      needs: build
+      name: Deploy
+      runs-on: [ self-hosted, label-development ]
 
-    steps:
-      - name: Pull origin repository
-        run: git pull origin develop
+      steps:
+        - name: Pull origin repository
+          run: git pull origin develop
 
-      - name: Docker rebuild
-        run: docker-compose up --detach --build
+        - name: Docker rebuild
+          run: docker-compose up --detach --build
