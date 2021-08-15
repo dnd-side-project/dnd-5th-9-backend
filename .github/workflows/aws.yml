@@ -1,4 +1,4 @@
-name: deploy
+name: aws
 
 on:
   push:
@@ -11,22 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # - run: |
-      #     aws s3 cd /home/node/back
-      #     aws s3 git pull origin develop
-      #     aws s3 docker-compose up --detach --build
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+deploy:
+    needs: build
+    name: Deploy
+    runs-on: [ self-hosted, label-development ]
 
-      - name: Deploy to Staging server
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: "./"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: "/home/node/back"
+    steps:
+      - name: Pull origin repository
+        run: git pull origin develop
+
+      - name: Docker rebuild
+        run: docker-compose up --detach --build
