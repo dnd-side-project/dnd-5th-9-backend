@@ -4,7 +4,6 @@ services:
     image: moida-image
     build:
       context: .
-      dockerfile: .
     ports:
       - "3000:3000"
     container_name: moida-container
