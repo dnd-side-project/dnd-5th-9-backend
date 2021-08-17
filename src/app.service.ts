@@ -6,7 +6,7 @@ dotenv.config();
 @Injectable()
 export class AppService {
     getHello(): string {
-        return 'Hello World!';
+        return 'Hello World! This is Moida Service.';
     }
 
     async sendQna({ email, title, content }: MailDto): Promise<ResResult> {
