@@ -223,6 +223,28 @@ export class MeetingsService {
         };
     }
 
+    async getMeeting(meetingIdOrParam: string): Promise<ResResult> {
+        let meeting;
+        if (!isNaN(+meetingIdOrParam)) {
+            meeting = await this.meetingsRepository.findOne({
+                where: { id: +meetingIdOrParam },
+            });
+        } else {
+            meeting = await this.meetingsRepository.findOne({
+                where: { param: meetingIdOrParam },
+            });
+        }
+        if (!meeting)
+            throw new NotFoundException('해당 미팅이 존재하지 않습니다.');
+        return {
+            status: true,
+            code: 200,
+            data: {
+                meeting,
+            },
+        };
+    }
+
     async getSchedules(meetingId: number) {
         const members = await this.meetingMembersRepository
             .createQueryBuilder('meetingMembers')
