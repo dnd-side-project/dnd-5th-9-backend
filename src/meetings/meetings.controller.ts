@@ -63,6 +63,12 @@ export class MeetingsController {
         return this.meetingsService.getMeetings(req.user.id);
     }
 
+    @ApiOperation({ summary: '아이디 또는 파라미터를 통한 미팅 정보 보기' })
+    @Get(':meetingIdOrParam')
+    getMeeting(@Param('meetingIdOrParam') meetingIdOrParam: string) {
+        return this.meetingsService.getMeeting(meetingIdOrParam);
+    }
+
     @ApiOperation({ summary: '미팅 스케줄 보기' })
     @Get(':meetingId/schedule')
     getSchedules(@Param('meetingId') meetingId: number) {
