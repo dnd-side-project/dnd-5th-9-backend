@@ -28,6 +28,10 @@ export interface Point {
     longitude: number;
 }
 
+interface MergedStations extends Omit<Stations, 'line'> {
+    line: string[];
+}
+
 @Injectable()
 export class MeetingsService {
     constructor(
@@ -466,9 +470,45 @@ export class MeetingsService {
     }
 
     private async getStations(center: Point) {
-        const stations: Point[] = await this.stationsRepository
+        const stations = await this.stationsRepository
             .createQueryBuilder()
             .getMany();
-        return geolib.orderByDistance(center, stations).slice(0, 5);
+        const mergedStations = this.getMergedStationsByName(stations);
+        return this.getFilteredStations(center, mergedStations);
+    }
+
+    private getMergedStationsByName(stations: Stations[]): MergedStations[] {
+        const mergedObject = new Object();
+        stations.forEach((station) => {
+            if (!mergedObject.hasOwnProperty(station.name))
+                mergedObject[station.name] = {
+                    ...station,
+                    line: [station.line],
+                };
+            else
+                mergedObject[station.name].line = [
+                    ...mergedObject[station.name].line,
+                    station.line,
+                ];
+        });
+        return Object.values(mergedObject);
+    }
+
+    private getFilteredStations(
+        center: Point,
+        mergedStations: MergedStations[]
+    ): MergedStations[] {
+        const filterByNumber = geolib
+            .orderByDistance(center, mergedStations)
+            .slice(0, 4) as MergedStations[];
+        const filterByDistance = filterByNumber.filter((station) => {
+            const stationPoint: Point = {
+                latitude: station.latitude,
+                longitude: station.longitude,
+            };
+            if (geolib.getDistance(center, stationPoint) <= 3000)
+                return station;
+        });
+        return filterByDistance;
     }
 }
