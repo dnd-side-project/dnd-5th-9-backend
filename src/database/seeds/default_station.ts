@@ -640,7 +640,7 @@ export class CreateInitialData implements Seeder {
                     longitude: 126.980299007575,
                 },
                 {
-                    name: '총신대입구역',
+                    name: '이수역',
                     line: '04호선',
                     latitude: 37.4867887823399,
                     longitude: 126.982202828739,
