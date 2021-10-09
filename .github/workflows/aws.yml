@@ -23,3 +23,6 @@ jobs:
 
         - name: Docker rebuild
           run: docker-compose up --detach --build
+
+        - name: delete previous image
+          run: docker image prune -f
