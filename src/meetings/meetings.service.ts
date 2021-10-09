@@ -19,7 +19,6 @@ import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
 import MeetingMemberSchedules from '../entities/MeetingMemberSchedules';
 import Users from '../entities/Users';
-import UsersToMeetings from '../entities/UsersToMeetings';
 import Stations from '../entities/Stations';
 import ResResult from '../lib/resResult';
 
@@ -48,8 +47,6 @@ export class MeetingsService {
         private meetingMemberSchedulesRepository: Repository<MeetingMemberSchedules>,
         @InjectRepository(Users)
         private usersRepository: Repository<Users>,
-        @InjectRepository(UsersToMeetings)
-        private usersToMeetingsRepository: Repository<UsersToMeetings>,
         @InjectRepository(Stations)
         private stationsRepository: Repository<Stations>
     ) {}
@@ -93,12 +90,8 @@ export class MeetingsService {
 
             if (userId) {
                 const users = new Users();
-                const usersToMeetings = new UsersToMeetings();
                 users.id = userId;
                 meetingMembers.user = users;
-                usersToMeetings.user = users;
-                usersToMeetings.meeting = createMeeting;
-                await this.usersToMeetingsRepository.save(usersToMeetings);
             }
 
             meetingMembers.meeting = createMeeting;
