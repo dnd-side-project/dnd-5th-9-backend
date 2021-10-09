@@ -2,7 +2,6 @@ import { Entity, Column, OneToMany, OneToOne } from 'typeorm';
 import BaseEntity from './BaseEntity';
 import MeetingMembers from './MeetingMembers';
 import MeetingSchedules from './MeetingSchedules';
-import UsersToMeetings from './UsersToMeetings';
 
 @Entity({ name: 'meetings' })
 export default class Meetings extends BaseEntity {
@@ -26,7 +25,4 @@ export default class Meetings extends BaseEntity {
 
     @OneToMany(() => MeetingMembers, (meetingMember) => meetingMember.meeting)
     meetingMembers: MeetingMembers[] | undefined;
-
-    @OneToMany(() => UsersToMeetings, (userToMeeting) => userToMeeting.meeting)
-    userToMeetings: UsersToMeetings[] | undefined;
 }

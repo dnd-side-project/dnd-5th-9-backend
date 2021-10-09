@@ -8,7 +8,6 @@ import Meetings from '../entities/Meetings';
 import MeetingSchedules from '../entities/MeetingSchedules';
 import MeetingMemberSchedules from '../entities/MeetingMemberSchedules';
 import Users from '../entities/Users';
-import UsersToMeetings from '../entities/UsersToMeetings';
 import Stations from '../entities/Stations';
 
 @Module({
@@ -20,7 +19,6 @@ import Stations from '../entities/Stations';
             MeetingSchedules,
             MeetingMemberSchedules,
             Users,
-            UsersToMeetings,
             Stations,
         ]),
     ],

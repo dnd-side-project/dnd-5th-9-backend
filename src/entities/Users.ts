@@ -1,7 +1,6 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import BaseEntity from './BaseEntity';
 import MeetingMembers from './MeetingMembers';
-import UsersToMeetings from './UsersToMeetings';
 
 @Entity({ name: 'users' })
 export default class Users extends BaseEntity {
@@ -19,7 +18,4 @@ export default class Users extends BaseEntity {
 
     @OneToMany(() => MeetingMembers, (meetingMember) => meetingMember.user)
     meetingMembers: MeetingMembers[] | undefined;
-
-    @OneToMany(() => UsersToMeetings, (userToMeeting) => userToMeeting.user)
-    userToMeetings: UsersToMeetings[] | undefined;
 }
