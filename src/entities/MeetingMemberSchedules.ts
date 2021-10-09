@@ -4,11 +4,11 @@ import MeetingMember from './MeetingMembers';
 
 @Entity({ name: 'meeting_member_schedules' })
 export default class MeetingMemberSchedules extends BaseEntity {
-    @Column({ name: 'start_date' })
-    startDate!: number;
+    @Column({ type: 'timestamp', name: 'start_date' })
+    startDate!: Date;
 
-    @Column({ name: 'end_date' })
-    endDate!: number;
+    @Column({ type: 'timestamp', name: 'end_date' })
+    endDate!: Date;
 
     @ManyToOne(
         () => MeetingMember,

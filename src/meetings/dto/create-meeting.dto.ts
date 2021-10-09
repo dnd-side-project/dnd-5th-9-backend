@@ -37,16 +37,16 @@ export class CreateMeetingDto {
     @IsNumber()
     @IsNotEmpty()
     @ApiProperty({
-        example: 1253145,
+        example: '2021-05-09',
         description: '시작날짜',
     })
-    public startDate: number;
+    public startDate: Date;
 
     @IsNumber()
     @IsNotEmpty()
     @ApiProperty({
-        example: 1253145,
+        example: '2021-05-09',
         description: '종료날짜',
     })
-    public endDate: number;
+    public endDate: Date;
 }
